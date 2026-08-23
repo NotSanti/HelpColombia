@@ -1,3 +1,7 @@
+"use client";
+
+import dynamic from "next/dynamic";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { DashboardData } from "@/types/dashboard";
 import { Header } from "@/components/dashboard/Header";
 import { LiveUpdateCard } from "@/components/dashboard/LiveUpdateCard";
@@ -8,37 +12,186 @@ import { FundingCard } from "@/components/dashboard/FundingCard";
 import { LiveUpdatesCard } from "@/components/dashboard/LiveUpdatesCard";
 import { RegionalImpactPanel } from "@/components/dashboard/RegionalImpactPanel";
 import { Footer } from "@/components/dashboard/Footer";
+import type { MapController } from "@/components/map/ColombiaMap";
 import {
-  MapBackground,
   MapChrome,
-  MapRegion,
+  MapLoadingOverlay,
+  MapVignette,
 } from "@/components/map/MapBackground";
+import { mapPublicUrls } from "@/lib/fixtures/map-design";
+
+const ColombiaMap = dynamic(
+  () =>
+    import("@/components/map/ColombiaMap").then((mod) => ({
+      default: mod.ColombiaMap,
+    })),
+  { ssr: false },
+);
+
+/** Warm HTTP cache for style sources before MapLibre mounts. */
+function prefetchMapAssets() {
+  const urls = [
+    mapPublicUrls.departments,
+    mapPublicUrls.neighbors,
+    mapPublicUrls.impactRegions,
+    mapPublicUrls.markers,
+    mapPublicUrls.labels,
+    mapPublicUrls.epicenter,
+  ];
+  for (const url of urls) {
+    void fetch(url, { priority: "low" } as RequestInit).catch(() => {});
+  }
+}
 
 export function DashboardShell({ data }: { data: DashboardData }) {
+  const [selectedRegionId, setSelectedRegionId] = useState<string | null>(null);
+  const [hoveredRegionId, setHoveredRegionId] = useState<string | null>(null);
+  const [isDesktop, setIsDesktop] = useState(false);
+  const [desktopOverlayVisible, setDesktopOverlayVisible] = useState(true);
+  const [desktopOverlayFading, setDesktopOverlayFading] = useState(false);
+  const [mobileOverlayVisible, setMobileOverlayVisible] = useState(true);
+  const [mobileOverlayFading, setMobileOverlayFading] = useState(false);
+  const mapControllerRef = useRef<MapController | null>(null);
+
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 1280px)");
+    const sync = () => setIsDesktop(media.matches);
+    sync();
+    media.addEventListener("change", sync);
+    return () => media.removeEventListener("change", sync);
+  }, []);
+
+  useEffect(() => {
+    prefetchMapAssets();
+  }, []);
+
+  const selectedRegion = useMemo(
+    () => data.regions.find((r) => r.id === selectedRegionId) ?? null,
+    [data.regions, selectedRegionId],
+  );
+
+  const handleMapReady = useCallback((controller: MapController) => {
+    mapControllerRef.current = controller;
+  }, []);
+
+  const handleDesktopMapFullyLoaded = useCallback(() => {
+    setDesktopOverlayFading(true);
+    window.setTimeout(() => setDesktopOverlayVisible(false), 550);
+  }, []);
+
+  const handleMobileMapFullyLoaded = useCallback(() => {
+    setMobileOverlayFading(true);
+    window.setTimeout(() => setMobileOverlayVisible(false), 550);
+  }, []);
+
+  const selectRegion = useCallback((regionId: string) => {
+    setSelectedRegionId(regionId);
+    mapControllerRef.current?.focusRegion(regionId);
+  }, []);
+
+  const mapProps = {
+    regions: data.regions,
+    selectedRegionId,
+    hoveredRegionId,
+    onSelectRegion: setSelectedRegionId,
+    onHoverRegion: setHoveredRegionId,
+    onReady: handleMapReady,
+  };
+
   return (
     <div className="relative flex h-dvh flex-col overflow-hidden bg-background">
-      {/* Full-bleed map so navbar/footer glass matches card transparency */}
-      <MapBackground className="hidden xl:block" />
+      {/*
+        Paint with the cards on xl (CSS), not after the JS media-query flip.
+        MapLibre mounts underneath; overlay fades when the map is fully ready.
+      */}
+      <div className="pointer-events-none absolute inset-0 z-0 hidden xl:block">
+        {desktopOverlayVisible ? (
+          <MapLoadingOverlay
+            fading={desktopOverlayFading}
+            onFadedOut={() => setDesktopOverlayVisible(false)}
+          />
+        ) : null}
+      </div>
+
+      {isDesktop ? (
+        <>
+          <ColombiaMap
+            {...mapProps}
+            showLoadingOverlay={false}
+            onFullyLoaded={handleDesktopMapFullyLoaded}
+          />
+          <MapVignette />
+        </>
+      ) : null}
 
       <Header className="relative z-30 shrink-0" />
+
+      <div className="sr-only" aria-live="polite" aria-atomic="true">
+        {selectedRegion
+          ? `Selected region ${selectedRegion.name}. Impact ${selectedRegion.severity}. Deaths ${selectedRegion.deaths}. People affected ${selectedRegion.affected}.`
+          : "No region selected."}
+      </div>
+
+      <section className="sr-only" aria-label="Affected regions summary">
+        <h2>Affected regions</h2>
+        <ul>
+          {data.regions.map((region) => (
+            <li key={region.id}>
+              <button type="button" onClick={() => selectRegion(region.id)}>
+                {region.name}: {region.severity} impact, {region.deaths} deaths,{" "}
+                {region.affected} affected
+              </button>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       {/* Mobile / tablet stacked flow */}
       <div className="relative z-10 flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-2 py-4 xl:hidden">
         <LiveUpdateCard data={data.liveStatus} />
-        <MapRegion />
+        <section
+          aria-label="Impact map of Colombia"
+          className="relative h-56 overflow-hidden rounded-[10px] border border-border sm:h-72"
+        >
+          {mobileOverlayVisible ? (
+            <MapLoadingOverlay
+              fading={mobileOverlayFading}
+              onFadedOut={() => setMobileOverlayVisible(false)}
+              className="z-[1]"
+            />
+          ) : null}
+          {!isDesktop ? (
+            <ColombiaMap
+              {...mapProps}
+              layout="contained"
+              showLoadingOverlay={false}
+              onFullyLoaded={handleMobileMapFullyLoaded}
+            />
+          ) : null}
+          <MapChrome
+            variant="legend"
+            className="absolute right-3 bottom-3 z-10 h-auto w-[122px]"
+          />
+        </section>
         <WhatHappenedCard data={data.earthquake} />
         <KeyFiguresCard figures={data.keyFigures} />
         <HelpCard organizations={data.organizations} />
         <FundingCard totals={data.fundingTotals} sectors={data.sectors} />
         <LiveUpdatesCard updates={data.liveUpdates} />
-        <RegionalImpactPanel regions={data.regions} />
+        <RegionalImpactPanel
+          regions={data.regions}
+          selectedRegionId={selectedRegionId}
+          hoveredRegionId={hoveredRegionId}
+          onSelectRegion={selectRegion}
+          onHoverRegion={setHoveredRegionId}
+        />
       </div>
 
-      {/* Desktop: 3 columns + full-width bottom — flex/grid scales with viewport */}
-      <div className="relative z-10 hidden min-h-0 flex-1 flex-col gap-3 overflow-hidden px-2 pt-3 pb-px xl:flex">
+      {/* Desktop: 3 columns + full-width bottom.
+          pointer-events-none so empty map areas stay draggable; cards re-enable hit testing. */}
+      <div className="pointer-events-none relative z-10 hidden min-h-0 flex-1 flex-col gap-3 overflow-hidden px-2 pt-3 pb-px xl:flex">
         <div className="relative grid min-h-0 flex-1 grid-cols-[minmax(290px,0.95fr)_minmax(0,1.45fr)_minmax(340px,1fr)] gap-3 overflow-hidden">
-          {/* Left column */}
-          <aside className="flex min-h-0 flex-col gap-2.5 overflow-visible">
+          <aside className="pointer-events-auto flex min-h-0 flex-col gap-2.5 overflow-visible">
             <div className="flex min-h-0 max-w-[calc(16rem+0.75rem+34px)] flex-[1.6] items-stretch gap-3">
               <LiveUpdateCard
                 data={data.liveStatus}
@@ -47,6 +200,8 @@ export function DashboardShell({ data }: { data: DashboardData }) {
               <MapChrome
                 variant="zoom"
                 className="h-[68px] w-[34px] shrink-0 self-start"
+                onZoomIn={() => mapControllerRef.current?.zoomIn()}
+                onZoomOut={() => mapControllerRef.current?.zoomOut()}
               />
             </div>
             <WhatHappenedCard
@@ -59,15 +214,13 @@ export function DashboardShell({ data }: { data: DashboardData }) {
             />
           </aside>
 
-          {/* Middle column */}
           <div className="relative flex min-h-0 flex-col overflow-hidden">
-            <div className="relative z-10 mt-auto w-full max-w-[760px] self-center pb-0.5">
+            <div className="pointer-events-auto relative z-10 mt-auto w-full max-w-[760px] self-center pb-0.5">
               <LiveUpdatesCard updates={data.liveUpdates} />
             </div>
           </div>
 
-          {/* Right column */}
-          <aside className="flex min-h-0 flex-col items-end gap-2.5 overflow-visible">
+          <aside className="pointer-events-auto flex min-h-0 flex-col items-end gap-2.5 overflow-visible">
             <div className="flex min-h-0 w-full max-w-[calc(20rem+0.75rem+122px)] flex-[1.4] items-stretch justify-end gap-3">
               <MapChrome
                 variant="legend"
@@ -88,7 +241,11 @@ export function DashboardShell({ data }: { data: DashboardData }) {
 
         <RegionalImpactPanel
           regions={data.regions}
-          className="relative z-10 shrink-0"
+          className="pointer-events-auto relative z-10 shrink-0"
+          selectedRegionId={selectedRegionId}
+          hoveredRegionId={hoveredRegionId}
+          onSelectRegion={selectRegion}
+          onHoverRegion={setHoveredRegionId}
         />
       </div>
 

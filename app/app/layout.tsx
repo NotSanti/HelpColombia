@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Geist_Mono } from "next/font/google";
+import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import "./globals.css";
 
 const inter = Inter({
@@ -19,14 +20,20 @@ export const metadata: Metadata = {
     "Verified disaster-aid information for Colombia — what happened, who needs help, and how you can help safely.",
 };
 
+const themeInitScript = `(function(){try{var t=localStorage.getItem("hc-theme");document.documentElement.classList.toggle("dark",t!=="light");}catch(e){document.documentElement.classList.add("dark");}})();`;
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${geistMono.variable} dark h-dvh overflow-hidden antialiased`}
+      suppressHydrationWarning
+      className={`${inter.variable} ${geistMono.variable} h-dvh overflow-hidden antialiased`}
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body className="flex h-dvh flex-col overflow-hidden font-sans">
-        {children}
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );

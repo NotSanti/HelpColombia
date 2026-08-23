@@ -65,7 +65,57 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-:root,
+:root {
+  /* Light theme — cool paper over the same navy brand system */
+  --background: #e8eef4;
+  --foreground: #031c31;
+  --panel: #ffffff;
+  --panel-alt: #f3f7fb;
+  --panel-raised: #ffffff;
+  --border: #b7c6d4;
+  --border-subtle: #d5dee7;
+  --text-secondary: #4d6478;
+  --severity-severe: #ef3340;
+  --severity-high: #ff681d;
+  --severity-moderate: #d99400;
+  --severity-low: #4f9a28;
+  --info: #0b7fd4;
+
+  --card: #ffffff;
+  --card-foreground: #031c31;
+  --popover: #ffffff;
+  --popover-foreground: #031c31;
+  --primary: #ef3340;
+  --primary-foreground: #f5f7fa;
+  --secondary: #eef3f8;
+  --secondary-foreground: #031c31;
+  --muted: #eef3f8;
+  --muted-foreground: #4d6478;
+  --accent: #e8eef4;
+  --accent-foreground: #031c31;
+  --destructive: #ef3340;
+  --input: #d5dee7;
+  --ring: #0b7fd4;
+  --chart-1: #ef3340;
+  --chart-2: #ff681d;
+  --chart-3: #d99400;
+  --chart-4: #4f9a28;
+  --chart-5: #0b7fd4;
+  --radius: 0.625rem;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #031c31;
+  --sidebar-primary: #ef3340;
+  --sidebar-primary-foreground: #f5f7fa;
+  --sidebar-accent: #eef3f8;
+  --sidebar-accent-foreground: #031c31;
+  --sidebar-border: #b7c6d4;
+  --sidebar-ring: #0b7fd4;
+  --chrome-highlight: rgb(255 255 255 / 70%);
+  --panel-shadow: 0 4px 18px rgb(3 28 49 / 8%), inset 0 1px 0 rgb(255 255 255 / 90%);
+  --map-water: #c5d4e3;
+  --map-loader-fg: #031c31;
+}
+
 .dark {
   --background: #031c31;
   --foreground: #f5f7fa;
@@ -110,6 +160,10 @@
   --sidebar-accent-foreground: #f5f7fa;
   --sidebar-border: #315064;
   --sidebar-ring: #169bff;
+  --chrome-highlight: rgb(255 255 255 / 6%);
+  --panel-shadow: 0 4px 18px rgb(0 0 0 / 16%), inset 0 1px 0 rgb(255 255 255 / 6%);
+  --map-water: #000b1e;
+  --map-loader-fg: #f5f7fa;
 }
 
 @layer base {
@@ -133,9 +187,7 @@
   background: color-mix(in srgb, var(--panel) 90%, transparent);
   border: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
   border-radius: 10px;
-  box-shadow:
-    0 4px 18px rgb(0 0 0 / 16%),
-    inset 0 1px 0 rgb(255 255 255 / 6%);
+  box-shadow: var(--panel-shadow);
   backdrop-filter: blur(16px) saturate(1.15);
   -webkit-backdrop-filter: blur(16px) saturate(1.15);
 }
@@ -143,7 +195,7 @@
 /* Full-bleed chrome (navbar / footer) — same glass as cards, no radius */
 .chrome-surface {
   background: color-mix(in srgb, var(--panel) 90%, transparent);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 6%);
+  box-shadow: inset 0 1px 0 var(--chrome-highlight);
   backdrop-filter: blur(16px) saturate(1.15);
   -webkit-backdrop-filter: blur(16px) saturate(1.15);
 }
@@ -267,3 +319,75 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* MapLibre forces position:relative on its root — keep it pinned inside our shell */
+.hc-map-root.maplibregl-map {
+  position: absolute !important;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* MapLibre popup themed to the dashboard */
+.hc-map-popup .maplibregl-popup-content {
+  background: color-mix(in srgb, var(--panel) 92%, transparent);
+  color: var(--foreground);
+  border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 28%);
+  backdrop-filter: blur(12px);
+  padding: 0.65rem 0.75rem;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.hc-map-popup .maplibregl-popup-tip {
+  border-top-color: color-mix(in srgb, var(--panel) 92%, transparent);
+}
+
+.hc-map-popup strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 13px;
+}
+
+.hc-map-popup-meta {
+  color: var(--text-secondary);
+  font-size: 11px;
+}
+
+/* Map boot overlay — soft epicenter-style pulse */
+@keyframes hc-map-loader-pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0.72);
+    opacity: 0.85;
+  }
+  70% {
+    opacity: 0.2;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.15);
+    opacity: 0;
+  }
+}
+
+@keyframes hc-map-loader-core {
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 10px rgba(239, 51, 64, 0.75);
+  }
+  50% {
+    opacity: 0.65;
+    box-shadow: 0 0 18px rgba(239, 51, 64, 0.95);
+  }
+}
+
+.hc-map-loader-pulse {
+  animation: hc-map-loader-pulse 2.2s ease-out infinite;
+}
+
+.hc-map-loader-core {
+  animation: hc-map-loader-core 1.4s ease-in-out infinite;
+}
+

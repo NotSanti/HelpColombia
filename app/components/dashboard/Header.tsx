@@ -1,5 +1,6 @@
 import { Heart, Menu } from "lucide-react";
 import { HelpColombiaLogo } from "@/components/brand/HelpColombiaLogo";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -34,6 +35,8 @@ export function Header({ className }: { className?: string }) {
         </nav>
 
         <div className="flex items-center gap-2">
+          <ThemeToggle />
+
           <Button
             asChild
             size="lg"
