@@ -1,0 +1,83 @@
+import { HeartPulse, Home, Users, UserRoundX } from "lucide-react";
+import type { KeyFigure } from "@/types/dashboard";
+import { Panel, PanelTitle } from "@/components/dashboard/Panel";
+import { cn } from "@/lib/utils";
+
+const toneClass = {
+  severe: "text-severity-severe bg-severity-severe/15",
+  info: "text-info bg-info/15",
+  high: "text-severity-high bg-severity-high/15",
+  low: "text-severity-low bg-severity-low/15",
+} as const;
+
+const icons = {
+  deaths: UserRoundX,
+  injured: HeartPulse,
+  affected: Users,
+  displaced: Home,
+} as const;
+
+export function KeyFiguresCard({
+  figures,
+  className,
+}: {
+  figures: KeyFigure[];
+  className?: string;
+}) {
+  return (
+    <Panel className={cn("flex min-h-0 flex-col px-4 pt-3.5 pb-2.5", className)} id="impact">
+      <PanelTitle className="mb-1.5 shrink-0">Key figures</PanelTitle>
+      <ul className="grid min-h-0 flex-1 grid-cols-2 content-center">
+        {figures.map((figure, index) => {
+          const Icon =
+            icons[figure.id as keyof typeof icons] ?? HeartPulse;
+          const top = index < 2;
+          const left = index % 2 === 0;
+          return (
+            <li
+              key={figure.id}
+              className={cn(
+                "flex items-center px-2 py-1.5",
+                top && "border-b border-border-subtle",
+                left && "border-r border-border-subtle pl-0",
+                !left && "pr-0",
+                !top && "pb-0",
+              )}
+            >
+              <div className="flex min-w-0 items-center gap-2">
+                <span
+                  className={cn(
+                    "inline-flex size-8 shrink-0 items-center justify-center rounded-lg",
+                    toneClass[figure.tone],
+                  )}
+                >
+                  <Icon className="size-4" aria-hidden="true" strokeWidth={2.25} />
+                </span>
+                <div className="min-w-0">
+                  <p className="metric-value text-lg font-medium tracking-tight text-foreground">
+                    {figure.value}
+                  </p>
+                  <p className="mt-0.5 text-x10 leading-tight text-text-secondary">
+                    {figure.label}
+                    {figure.detail ? (
+                      <>
+                        <br />
+                        {figure.detail}
+                      </>
+                    ) : null}
+                  </p>
+                </div>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+      <a
+        href="#regions"
+        className="mt-auto inline-flex shrink-0 pt-2 text-x10 font-medium text-severity-severe underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+      >
+        See affected areas →
+      </a>
+    </Panel>
+  );
+}
