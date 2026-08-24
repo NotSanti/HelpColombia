@@ -1,8 +1,27 @@
 # Help Colombia — Iterative MVP Milestones & Cursor Prompts
 
-Complete these sequentially.
+Complete these **sequentially**, one milestone per implementation cycle.
 
-Do not skip ahead unless explicitly instructed.
+---
+
+# Agent workflow
+
+Default autonomous loop (see also `agent-rules.md` §0):
+
+```text
+You → Product requirements → Agent plans → Agent implements → Agent verifies → Agent continues
+```
+
+For each milestone:
+
+1. Read `agent-rules.md` and the milestone section below.
+2. Implement **that milestone only** (do not mix deliverables from later milestones).
+3. Run verification: lint, typecheck, tests, and build when applicable.
+4. On success: **commit**, **push**, brief completion summary, then **start the next milestone immediately**.
+
+Do **not** stop to ask whether to continue unless genuinely blocked (see `agent-rules.md` §0).
+
+“Implement Milestone N only” in the prompts below means **scope**, not “stop forever after N”. It prevents skipping ahead within a single change set — not automatic progression after verification.
 
 ---
 

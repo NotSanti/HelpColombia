@@ -28,7 +28,15 @@ npm run typecheck
 npm run build
 ```
 
-Copy `.env.example` to `.env.local` when environment variables are needed (Milestone 3+).
+Copy `.env.example` to `.env.local` and fill Supabase keys when using a live project (Milestone 3+). Without env vars, the dashboard falls back to fixtures.
+
+```bash
+# Optional: local Supabase (requires Docker)
+npx supabase start
+npx supabase db reset   # applies migrations + seed.sql
+```
+
+Migrations live in `supabase/migrations/`. Seed data is `supabase/seed.sql`.
 
 ## Read order
 
@@ -87,4 +95,4 @@ Every milestone in `milestones.md` includes:
 - non-goals
 - Cursor prompt
 
-Cursor should complete **one milestone at a time**.
+The agent completes **one milestone at a time**, then **commits, pushes, and continues** to the next after verification passes (see `agent-rules.md` §0).

@@ -4,6 +4,41 @@ These rules apply to all AI-assisted development.
 
 ---
 
+# 0. Autonomous milestone workflow
+
+Default flow:
+
+```text
+You → Product requirements → Agent plans → Agent implements → Agent verifies → Agent continues
+```
+
+When working through `milestones.md`:
+
+1. Read the active milestone and required docs (see §1).
+2. Plan briefly, then implement **one milestone at a time**.
+3. Verify before moving on:
+   - `npm run lint`
+   - `npm run typecheck`
+   - `npm test` (and `npm run build` when the milestone touches routing, build config, or production behavior)
+4. When verification passes and the milestone deliverables are met:
+   - **Commit** the milestone work with a clear message (one milestone per commit when practical).
+   - **Push** to the remote branch to keep git history organized.
+   - **Continue immediately** to the next milestone without asking the user to proceed.
+
+Do **not** stop merely to ask whether you should continue.
+
+Only pause for user input when genuinely necessary, for example:
+
+- missing secrets, credentials, or third-party approval (e.g. ReliefWeb app name)
+- an irreversible or security-sensitive decision not covered by the docs
+- acceptance criteria cannot be met after reasonable attempts
+- the requested behavior conflicts with `security-and-data.md`
+- deployment or production promotion (Milestone 11 explicitly forbids auto-deploy)
+
+Between milestones, a short completion note is enough; do not wait for approval before starting the next milestone.
+
+---
+
 # 1. Read before editing
 
 Before performing a milestone:
@@ -20,9 +55,9 @@ Do not assume the repository still matches the original plan.
 
 # 2. Work incrementally
 
-Never implement multiple future milestones unless explicitly asked.
+Implement **one milestone at a time** — never batch multiple future milestones into a single change set unless explicitly asked.
 
-Complete only the active milestone.
+After a milestone passes verification, **automatically start the next milestone** (see §0).
 
 A milestone should end with:
 
@@ -31,8 +66,10 @@ working implementation
 typecheck passing
 lint passing
 relevant tests passing
-summary of changed files
-known limitations
+git commit + push for that milestone
+brief completion summary
+known limitations (if any)
+then continue to the next milestone
 ```
 
 ---
@@ -244,46 +281,58 @@ Do not install libraries for tiny utilities.
 
 # 16. Completion report
 
-After each Cursor milestone, report:
+After each milestone **before continuing**, produce a brief report:
 
 ```markdown
 ## Completed
-- ...
+- Milestone N — …
 
 ## Files changed
-- ...
+- …
 
 ## Verification
-- npm run lint
-- npm run typecheck
-- npm test ...
+- npm run lint ✓
+- npm run typecheck ✓
+- npm test ✓
+- npm run build ✓ (when applicable)
 
 ## Known limitations
-- ...
+- …
 
-## Next milestone
-- ...
+## Next
+- Starting Milestone N+1 …
 ```
 
-Do not automatically begin the next milestone.
+Then **commit, push, and continue** to the next milestone without waiting for user confirmation (see §0).
+
+Do not ask “Should I continue to the next milestone?”
 
 ---
 
 # 17. Git
 
-Prefer one milestone per branch/PR.
+**One milestone per commit** when practical. Keep commits narrowly scoped and descriptive.
 
-Suggested:
+After each verified milestone:
 
 ```text
-feat/m1-scaffold
-feat/m2-dashboard-shell
-feat/m3-map
-feat/m4-database
-...
+git add <relevant files>
+git commit -m "feat(mN): …"
+git push
 ```
 
-Commits should be descriptive and narrowly scoped.
+Suggested branch naming:
+
+```text
+feat/m1-dashboard-shell
+feat/m3-supabase-foundation
+feat/m4-donation-redirects
+…
+```
+
+Do **not** commit secrets (`.env.local`, service-role keys, etc.).
+
+Prefer one milestone per branch/PR when using pull requests.
 
 ---
 
