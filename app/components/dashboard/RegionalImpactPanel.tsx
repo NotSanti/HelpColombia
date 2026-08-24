@@ -27,7 +27,8 @@ export function RegionalImpactPanel({
           Who needs help most?
         </PanelTitle>
         <p className="text-[11px] leading-snug text-text-secondary">
-          Select a region below or on the map for details.
+          Select a region below or on the map for details. This list is the
+          accessible alternative to the map view.
         </p>
       </div>
       <ul className="grid grid-cols-2 gap-1.5 md:grid-cols-3 xl:grid-cols-6">

@@ -81,7 +81,10 @@ export type RegionImpact = {
   sourceName?: string;
 };
 
+export type DashboardDataMode = "live" | "fixture" | "degraded";
+
 export type DashboardData = {
+  dataMode: DashboardDataMode;
   liveStatus: LiveStatus;
   earthquake: EarthquakeFacts;
   keyFigures: KeyFigure[];

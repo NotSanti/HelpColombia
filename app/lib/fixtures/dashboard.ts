@@ -2,6 +2,7 @@ import type { DashboardData } from "@/types/dashboard";
 
 /** Static fixture for Milestone 1 — replaced by server data in later milestones. */
 export const dashboardFixture: DashboardData = {
+  dataMode: "fixture",
   liveStatus: {
     headline: "Colombia Needs Us Now",
     summary:

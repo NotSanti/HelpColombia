@@ -12,6 +12,7 @@ import { FundingCard } from "@/components/dashboard/FundingCard";
 import { LiveUpdatesCard } from "@/components/dashboard/LiveUpdatesCard";
 import { RegionalImpactPanel } from "@/components/dashboard/RegionalImpactPanel";
 import { Footer } from "@/components/dashboard/Footer";
+import { DataFreshnessBanner } from "@/components/dashboard/DataFreshnessBanner";
 import type { MapController } from "@/components/map/ColombiaMap";
 import {
   MapChrome,
@@ -133,7 +134,13 @@ export function DashboardShell({ data }: { data: DashboardData }) {
       ) : null}
 
       <Header className="relative z-30 shrink-0" />
+      <DataFreshnessBanner
+        mode={data.dataMode}
+        lastUpdatedLabel={data.liveStatus.lastUpdatedLabel}
+        className="relative z-30 shrink-0"
+      />
 
+      <div id="main-content" className="relative flex min-h-0 flex-1 flex-col">
       <div className="sr-only" aria-live="polite" aria-atomic="true">
         {selectedRegion
           ? `Selected region ${selectedRegion.name}. Impact ${selectedRegion.severity}. Deaths ${selectedRegion.deaths}. People affected ${selectedRegion.affected}.`
@@ -255,6 +262,8 @@ export function DashboardShell({ data }: { data: DashboardData }) {
           onSelectRegion={selectRegion}
           onHoverRegion={setHoveredRegionId}
         />
+      </div>
+
       </div>
 
       <Footer className="relative z-30 shrink-0" dataSources={data.dataSources} />

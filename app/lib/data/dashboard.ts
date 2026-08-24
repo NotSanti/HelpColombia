@@ -402,6 +402,7 @@ async function loadDashboardFromSupabase(): Promise<DashboardData> {
     disaster.updated_at;
 
   return {
+    dataMode: "live",
     liveStatus: {
       headline: disaster.headline ?? disaster.name,
       summary: disaster.summary ?? "",
@@ -457,6 +458,6 @@ export async function getDashboardData(): Promise<DashboardData> {
       "[getDashboardData] Supabase read failed; using fixture",
       error,
     );
-    return dashboardFixture;
+    return { ...dashboardFixture, dataMode: "degraded" };
   }
 }
