@@ -1,6 +1,9 @@
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
-import { dashboardFixture } from "@/lib/fixtures/dashboard";
+import { getDashboardData } from "@/lib/data/dashboard";
 
-export default function Home() {
-  return <DashboardShell data={dashboardFixture} />;
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const data = await getDashboardData();
+  return <DashboardShell data={data} />;
 }

@@ -13,6 +13,8 @@ const icons = {
   UNICEF: Droplets,
   WFP: Wheat,
   "Red Cross": HeartHandshake,
+  "Colombian Red Cross": HeartHandshake,
+  ReliefWeb: Droplets,
 } as const;
 
 export function LiveUpdatesCard({

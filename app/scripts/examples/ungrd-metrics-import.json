@@ -1,0 +1,27 @@
+{
+  "disasterSlug": "colombia-earthquake-2025-08-17",
+  "sourceName": "UNGRD",
+  "sourceUrl": "https://portal.gestiondelriesgo.gov.co/",
+  "reportedAt": "2025-08-20T15:00:00.000Z",
+  "metrics": [
+    {
+      "metricType": "deaths",
+      "value": 320,
+      "displayValue": "320+",
+      "detail": "Confirmed"
+    },
+    {
+      "metricType": "injured",
+      "value": 2200,
+      "displayValue": "2,200+",
+      "detail": "Across regions"
+    },
+    {
+      "metricType": "deaths",
+      "value": 130,
+      "displayValue": "130+",
+      "department": "Chocó",
+      "detail": "Department total"
+    }
+  ]
+}

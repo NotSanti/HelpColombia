@@ -96,6 +96,14 @@ export function DashboardShell({ data }: { data: DashboardData }) {
     onSelectRegion: setSelectedRegionId,
     onHoverRegion: setHoveredRegionId,
     onReady: handleMapReady,
+    epicenter:
+      data.earthquake.latitude != null && data.earthquake.longitude != null
+        ? {
+            latitude: data.earthquake.latitude,
+            longitude: data.earthquake.longitude,
+            magnitude: data.earthquake.magnitude,
+          }
+        : null,
   };
 
   return (

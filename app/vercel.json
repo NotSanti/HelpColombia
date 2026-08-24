@@ -1,0 +1,24 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/reliefweb",
+      "schedule": "15 * * * *"
+    },
+    {
+      "path": "/api/cron/seismic",
+      "schedule": "5 * * * *"
+    },
+    {
+      "path": "/api/cron/funding",
+      "schedule": "25 * * * *"
+    },
+    {
+      "path": "/api/cron/ifrc",
+      "schedule": "35 * * * *"
+    },
+    {
+      "path": "/api/cron/donation-health",
+      "schedule": "45 * * * *"
+    }
+  ]
+}

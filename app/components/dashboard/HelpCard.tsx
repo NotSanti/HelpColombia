@@ -91,13 +91,28 @@ export function HelpCard({
                 {visual.mark}
               </span>
 
-              <div className="min-w-0">
+                  <div className="min-w-0">
                 <p className="text-[12px] font-semibold leading-none text-foreground">
                   {org.name}
                 </p>
                 <p className="mt-1 line-clamp-2 text-[10px] leading-snug text-text-secondary">
                   {org.summary}
                 </p>
+                {org.metrics && org.metrics.length > 0 ? (
+                  <p className="mt-1 text-[9px] leading-snug text-text-secondary/90">
+                    {org.metrics
+                      .map(
+                        (metric) =>
+                          `${metric.label}: ${metric.value} (${metric.sourceName})`,
+                      )
+                      .join(" · ")}
+                  </p>
+                ) : null}
+                {org.opsUpdateLabel ? (
+                  <p className="mt-0.5 line-clamp-1 text-[9px] leading-snug text-text-secondary/80">
+                    Ops update: {org.opsUpdateLabel}
+                  </p>
+                ) : null}
               </div>
 
               <div className="flex w-19 shrink-0 flex-col items-end gap-1">
@@ -109,7 +124,10 @@ export function HelpCard({
                     donateClass[org.accent],
                   )}
                 >
-                  <a href="#how-to-help" aria-label={`Donate via ${org.name}`}>
+                  <a
+                    href={`/out/${encodeURIComponent(org.slug)}`}
+                    aria-label={`Donate via ${org.name}`}
+                  >
                     Donate
                   </a>
                 </Button>

@@ -16,6 +16,8 @@ export const dashboardFixture: DashboardData = {
     epicenter: "27 km NW of Nuquí, Chocó",
     depthKm: 30,
     aftershocksLabel: "120+ aftershocks recorded",
+    latitude: 5.92,
+    longitude: -77.42,
   },
   keyFigures: [
     {
@@ -24,6 +26,8 @@ export const dashboardFixture: DashboardData = {
       detail: "Confirmed",
       value: "312+",
       tone: "severe",
+      sourceName: "UNGRD",
+      reportedAtLabel: "2 days ago",
     },
     {
       id: "injured",
@@ -31,6 +35,8 @@ export const dashboardFixture: DashboardData = {
       detail: "Across regions",
       value: "2,140+",
       tone: "info",
+      sourceName: "UNGRD",
+      reportedAtLabel: "2 days ago",
     },
     {
       id: "affected",
@@ -38,6 +44,8 @@ export const dashboardFixture: DashboardData = {
       detail: "Estimated",
       value: "68,400+",
       tone: "high",
+      sourceName: "UN OCHA",
+      reportedAtLabel: "2 days ago",
     },
     {
       id: "displaced",
@@ -45,6 +53,8 @@ export const dashboardFixture: DashboardData = {
       detail: "From their homes",
       value: "24,000+",
       tone: "low",
+      sourceName: "UN OCHA",
+      reportedAtLabel: "2 days ago",
     },
   ],
   organizations: [

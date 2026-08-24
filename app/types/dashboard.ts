@@ -14,6 +14,9 @@ export type EarthquakeFacts = {
   epicenter: string;
   depthKm: number;
   aftershocksLabel: string;
+  /** WGS84 — drives live map epicenter when present */
+  latitude: number | null;
+  longitude: number | null;
 };
 
 export type KeyFigure = {
@@ -22,6 +25,15 @@ export type KeyFigure = {
   detail?: string;
   value: string;
   tone: "severe" | "info" | "high" | "low";
+  /** Provenance for the selected observation */
+  sourceName?: string;
+  reportedAtLabel?: string;
+};
+
+export type OrganizationHelpMetric = {
+  label: string;
+  value: string;
+  sourceName: string;
 };
 
 export type OrganizationHelp = {
@@ -32,6 +44,9 @@ export type OrganizationHelp = {
   websiteUrl: string;
   websiteLabel: string;
   accent: "severe" | "info" | "high";
+  /** Sourced numeric claims only — never AI-inferred */
+  metrics?: OrganizationHelpMetric[];
+  opsUpdateLabel?: string;
 };
 
 export type FundingTotalItem = {
@@ -63,6 +78,7 @@ export type RegionImpact = {
   severity: Severity;
   deaths: string;
   affected: string;
+  sourceName?: string;
 };
 
 export type DashboardData = {

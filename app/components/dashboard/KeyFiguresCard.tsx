@@ -65,6 +65,17 @@ export function KeyFiguresCard({
                         {figure.detail}
                       </>
                     ) : null}
+                    {figure.sourceName ? (
+                      <>
+                        <br />
+                        <span className="text-text-secondary/80">
+                          {figure.sourceName}
+                          {figure.reportedAtLabel
+                            ? ` · ${figure.reportedAtLabel}`
+                            : ""}
+                        </span>
+                      </>
+                    ) : null}
                   </p>
                 </div>
               </div>

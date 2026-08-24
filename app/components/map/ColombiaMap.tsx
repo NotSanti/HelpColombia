@@ -53,6 +53,12 @@ type ColombiaMapProps = {
   className?: string;
   interactive?: boolean;
   layout?: "viewport" | "contained";
+  /** Live epicenter from disaster_events; falls back to static fixture GeoJSON. */
+  epicenter?: {
+    longitude: number;
+    latitude: number;
+    magnitude: number;
+  } | null;
 };
 
 const DEPARTMENTS_SOURCE = "colombia-departments";
@@ -809,6 +815,7 @@ export function ColombiaMap({
   className,
   interactive = true,
   layout = "viewport",
+  epicenter = null,
 }: ColombiaMapProps) {
   const { theme } = useTheme();
   const shellRef = useRef<HTMLDivElement>(null);
@@ -824,6 +831,7 @@ export function ColombiaMap({
   const onFullyLoadedRef = useRef(onFullyLoaded);
   const regionsRef = useRef(regions);
   const themeRef = useRef(theme);
+  const epicenterRef = useRef(epicenter);
   const impactRegionsRef = useRef<ImpactRegionsGeoJson | null>(null);
   const [overlayVisible, setOverlayVisible] = useState(showLoadingOverlay);
   const [overlayFading, setOverlayFading] = useState(false);
@@ -833,6 +841,34 @@ export function ColombiaMap({
   useEffect(() => {
     themeRef.current = theme;
   }, [theme]);
+
+  useEffect(() => {
+    epicenterRef.current = epicenter;
+  }, [epicenter]);
+
+  function applyEpicenterToMap(
+    map: Map,
+    point: NonNullable<ColombiaMapProps["epicenter"]>,
+  ) {
+    if (!map.getSource(EPICENTER_SOURCE)) return;
+    const source = map.getSource(EPICENTER_SOURCE) as GeoJSONSource;
+    source.setData({
+      type: "FeatureCollection",
+      features: [
+        {
+          type: "Feature",
+          properties: {
+            label: `Epicenter · ${point.magnitude.toFixed(1)} Mw`,
+            magnitude: point.magnitude,
+          },
+          geometry: {
+            type: "Point",
+            coordinates: [point.longitude, point.latitude],
+          },
+        },
+      ],
+    });
+  }
 
   useEffect(() => {
     selectedRef.current = selectedRegionId;
@@ -863,6 +899,12 @@ export function ColombiaMap({
       window.setTimeout(() => setOverlayVisible(false), 520);
     };
   }, [showLoadingOverlay]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !epicenter) return;
+    applyEpicenterToMap(map, epicenter);
+  }, [epicenter]);
 
   useEffect(() => {
     const shell = shellRef.current;
@@ -1041,11 +1083,15 @@ export function ColombiaMap({
       whenStyleReady(map, () => {
         if (!map) return;
         addBogotaLabelLayer(map, themeRef.current);
+        const liveEpicenter = epicenterRef.current;
+        if (liveEpicenter) applyEpicenterToMap(map, liveEpicenter);
         markReady();
       });
       map.once("idle", () => {
         if (!map) return;
         addBogotaLabelLayer(map, themeRef.current);
+        const liveEpicenter = epicenterRef.current;
+        if (liveEpicenter) applyEpicenterToMap(map, liveEpicenter);
         markReady();
       });
 
