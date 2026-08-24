@@ -140,7 +140,7 @@ export function DashboardShell({ data }: { data: DashboardData }) {
         className="relative z-30 shrink-0"
       />
 
-      <div id="main-content" className="relative flex min-h-0 flex-1 flex-col">
+      <div id="main-content" className="relative flex min-h-0 flex-1 flex-col pointer-events-none">
       <div className="sr-only" aria-live="polite" aria-atomic="true">
         {selectedRegion
           ? `Selected region ${selectedRegion.name}. Impact ${selectedRegion.severity}. Deaths ${selectedRegion.deaths}. People affected ${selectedRegion.affected}.`
@@ -162,7 +162,7 @@ export function DashboardShell({ data }: { data: DashboardData }) {
       </section>
 
       {/* Mobile / tablet stacked flow */}
-      <div className="relative z-10 flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-2 py-4 xl:hidden">
+      <div className="pointer-events-auto relative z-10 flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-2 py-4 xl:hidden">
         <LiveUpdateCard data={data.liveStatus} />
         <section
           aria-label="Impact map of Colombia"
@@ -229,7 +229,7 @@ export function DashboardShell({ data }: { data: DashboardData }) {
             />
           </aside>
 
-          <div className="relative flex min-h-0 flex-col overflow-hidden">
+          <div className="pointer-events-none relative flex min-h-0 flex-col overflow-hidden">
             <div className="pointer-events-auto relative z-10 mt-auto w-full max-w-[760px] self-center pb-0.5">
               <LiveUpdatesCard updates={data.liveUpdates} />
             </div>
