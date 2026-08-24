@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { HelpColombiaMark } from "@/components/brand/HelpColombiaMark";
 import { cn } from "@/lib/utils";
 
 type HelpColombiaLogoProps = {
@@ -19,14 +19,7 @@ export function HelpColombiaLogo({
       )}
       aria-label="Help Colombia home"
     >
-      <Image
-        src="/help-colombia-mark.svg"
-        alt=""
-        width={52}
-        height={48}
-        className="h-11 w-auto shrink-0"
-        priority
-      />
+      <HelpColombiaMark />
       <span className="flex min-w-0 flex-col leading-none">
         <span className="text-base font-bold tracking-tight sm:text-lg">
           <span className="text-foreground">Help </span>

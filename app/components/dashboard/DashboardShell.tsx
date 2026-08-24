@@ -207,7 +207,7 @@ export function DashboardShell({ data }: { data: DashboardData }) {
       <div className="pointer-events-none relative z-10 hidden min-h-0 flex-1 flex-col gap-3 overflow-hidden px-2 pt-3 pb-px xl:flex">
         <div className="relative grid min-h-0 flex-1 grid-cols-[minmax(290px,0.95fr)_minmax(0,1.45fr)_minmax(340px,1fr)] gap-3 overflow-hidden">
           <aside className="pointer-events-auto flex min-h-0 flex-col gap-2.5 overflow-visible">
-            <div className="flex min-h-0 max-w-[calc(16rem+0.75rem+34px)] flex-[1.6] items-stretch gap-3">
+            <div className="flex min-h-0 max-w-[calc(16rem+0.75rem+34px)] flex-[1.2] items-stretch gap-3">
               <LiveUpdateCard
                 data={data.liveStatus}
                 className="min-h-0 max-w-[16rem] flex-1 overflow-y-auto"
@@ -225,7 +225,7 @@ export function DashboardShell({ data }: { data: DashboardData }) {
             />
             <KeyFiguresCard
               figures={data.keyFigures}
-              className="min-h-0 max-w-[20rem] flex-[1.05] overflow-y-auto"
+              className="min-h-0 max-w-[20rem] flex-[1.35] overflow-y-auto"
             />
           </aside>
 
