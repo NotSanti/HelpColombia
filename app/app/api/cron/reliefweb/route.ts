@@ -18,6 +18,19 @@ export async function GET(request: Request) {
   const result = await ingestReliefWebUpdates();
 
   if (!result.ok) {
+    // Missing ReliefWeb app name is expected until ReliefWeb approves the name.
+    // Return 200 so Vercel Cron does not treat the job as failed.
+    if (
+      result.stage === "config" &&
+      result.message === "Missing RELIEFWEB_APP_NAME"
+    ) {
+      return NextResponse.json({
+        ok: true,
+        skipped: true,
+        reason: result.message,
+      });
+    }
+
     const status =
       result.stage === "config" ? 503 : result.stage === "fetch" ? 502 : 500;
     return NextResponse.json(

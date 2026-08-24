@@ -52,6 +52,30 @@ npm run build       ✓
 npm audit --omit=dev ✓ (0 vulnerabilities)
 ```
 
+## Production verification (2026-08-24)
+
+**URL:** https://help-colombia-ten.vercel.app  
+**Deployment:** `dpl_Dw433SFNWrHAjLu9L8ErJ8ScTn6e` (READY, production)
+
+| Check | Result |
+| --- | --- |
+| Live Supabase reads | ✓ Dashboard shows live IFRC/seismic data (no fixture banner) |
+| Donation redirect | ✓ `/out/colombian-red-cross` → `https://www.cruzrojacolombiana.org/` (302) |
+| Cron auth + ingest | ✓ seismic, funding, IFRC, donation-health return `ok: true` |
+| ReliefWeb cron | Skipped until `RELIEFWEB_APP_NAME` approved (returns 200 + `skipped`) |
+| Security headers | ✓ CSP, HSTS, X-Frame-Options present on responses |
+
+**Donation health (after cron):**
+
+| Organization | Status | Notes |
+| --- | --- | --- |
+| colombian-red-cross | healthy | enabled |
+| direct-relief | healthy | enabled |
+| wfp | healthy | enabled |
+| unicef | unhealthy | HTTP 403 from upstream (likely bot blocking); still enabled — review manually |
+
+**Note:** Runtime errors in Vercel logs before env vars were set (`dpl_Bh7cUP5ve86aMruaXquYuizhkd12`) are resolved on the current deployment.
+
 ## Known limitations before launch
 
 1. **ReliefWeb live ingest** blocked until `RELIEFWEB_APP_NAME` is approved.
@@ -61,9 +85,9 @@ npm audit --omit=dev ✓ (0 vulnerabilities)
 
 ## Pre-launch checklist
 
-- [ ] Set production env vars on Vercel
-- [ ] Enable Vercel Cron for `/api/cron/*` routes
-- [ ] Confirm ReliefWeb app name approval
-- [ ] Review `donation_destinations.needs_review` after health cron
-- [ ] Manual smoke test: donate CTA → `/out/{slug}` → verified HTTPS redirect
-- [ ] Promote deployment manually when satisfied
+- [x] Set production env vars on Vercel
+- [x] Enable Vercel Cron for `/api/cron/*` routes (daily schedules in `vercel.json`)
+- [ ] Confirm ReliefWeb app name approval (blocked — seeded DB updates used meanwhile)
+- [x] Review `donation_destinations.needs_review` after health cron (none flagged; UNICEF 403 noted above)
+- [x] Manual smoke test: donate CTA → `/out/{slug}` → verified HTTPS redirect
+- [ ] Promote deployment manually when satisfied (production URL is live at help-colombia-ten.vercel.app)
