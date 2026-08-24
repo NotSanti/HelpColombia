@@ -6,7 +6,7 @@ Generated as part of Milestone 11 (production hardening). **Do not deploy automa
 
 | Check | Status | Notes |
 | --- | --- | --- |
-| Content-Security-Policy | Done | `next.config.ts` — self-hosted scripts, MapLibre worker/blob, Supabase + demotiles fonts |
+| Content-Security-Policy | Done | `middleware.ts` — per-request nonces for Next.js hydration; MapLibre worker/blob, Supabase + demotiles fonts |
 | Frame protection | Done | `X-Frame-Options: DENY`, CSP `frame-ancestors 'none'` |
 | HSTS | Done | Enabled via security headers (Vercel terminates TLS) |
 | Service-role server-only | Done | `SUPABASE_SERVICE_ROLE_KEY` never `NEXT_PUBLIC_`; validated in `lib/env/production.ts` |

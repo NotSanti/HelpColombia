@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { Inter, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import "./globals.css";
@@ -20,7 +21,9 @@ export const metadata: Metadata = {
     "Verified disaster-aid information for Colombia — what happened, who needs help, and how you can help safely.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
+
   return (
     <html
       lang="en"
@@ -28,7 +31,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${inter.variable} ${geistMono.variable} h-dvh overflow-hidden antialiased`}
     >
       <head>
-        <script src="/theme-init.js" defer />
+        <script src="/theme-init.js" defer nonce={nonce} />
       </head>
       <body className="flex h-dvh flex-col overflow-hidden font-sans">
         <a

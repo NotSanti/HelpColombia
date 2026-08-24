@@ -1,22 +1,7 @@
 import type { NextConfig } from "next";
 
-const csp = [
-  "default-src 'self'",
-  "script-src 'self'",
-  "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob:",
-  "font-src 'self' https://demotiles.maplibre.org",
-  "connect-src 'self' https://*.supabase.co https://demotiles.maplibre.org",
-  "worker-src 'self' blob:",
-  "object-src 'none'",
-  "base-uri 'none'",
-  "frame-ancestors 'none'",
-  "form-action 'self'",
-  "upgrade-insecure-requests",
-].join("; ");
-
+/** CSP is applied per-request with nonces in middleware.ts (Next.js requires inline script nonces). */
 const securityHeaders = [
-  { key: "Content-Security-Policy", value: csp },
   { key: "X-Frame-Options", value: "DENY" },
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
