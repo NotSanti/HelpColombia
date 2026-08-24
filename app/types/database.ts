@@ -9,6 +9,28 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      admin_audit_log: {
+        Row: {
+          action: string;
+          created_at: string;
+          entity_id: string | null;
+          entity_type: string;
+          id: string;
+          payload: Json | null;
+        };
+        Insert: {
+          action: string;
+          created_at?: string;
+          entity_id?: string | null;
+          entity_type: string;
+          id?: string;
+          payload?: Json | null;
+        };
+        Update: Partial<
+          Database["public"]["Tables"]["admin_audit_log"]["Insert"]
+        >;
+        Relationships: [];
+      };
       disaster_events: {
         Row: {
           aftershocks_label: string | null;

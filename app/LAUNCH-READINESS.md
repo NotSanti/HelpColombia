@@ -80,7 +80,7 @@ npm audit --omit=dev ✓ (0 vulnerabilities)
 
 1. **ReliefWeb live ingest** blocked until `RELIEFWEB_APP_NAME` is approved.
 2. **Playwright smoke tests** not configured — add `@playwright/test` before CI browser gate.
-3. **Admin tools** (Milestone 12) not built — manual Supabase/service-role ops for verification review.
+3. **Admin console** (Milestone 12) at `/admin` — set `ADMIN_SECRET` in Vercel to enable; not linked from public UI.
 4. **CSP `style-src 'unsafe-inline'`** still required for MapLibre/Tailwind runtime styles.
 
 ## Pre-launch checklist
