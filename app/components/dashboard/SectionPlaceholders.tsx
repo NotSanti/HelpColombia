@@ -2,10 +2,12 @@ import { SECTION_PLACEHOLDERS } from "@/lib/navigation/sections";
 
 /**
  * Minimal Phase 2 section anchors — full content arrives in later milestones.
- * `#updates` is rendered by UpdatesSection (Milestone 14).
+ * `#updates` and `#needs` are rendered by their dedicated sections.
  */
 export function SectionPlaceholders() {
-  const placeholders = SECTION_PLACEHOLDERS.filter((s) => s.id !== "updates");
+  const placeholders = SECTION_PLACEHOLDERS.filter(
+    (s) => s.id !== "updates" && s.id !== "needs",
+  );
 
   return (
     <div className="relative z-20 bg-background">

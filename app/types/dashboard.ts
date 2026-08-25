@@ -85,7 +85,12 @@ export type RegionImpact = {
   severity: Severity;
   deaths: string;
   affected: string;
+  /** Only set when a sourced value exists — never estimated. */
+  injured?: string | null;
+  displaced?: string | null;
   sourceName?: string;
+  sourceNames?: string[];
+  lastUpdatedLabel?: string | null;
 };
 
 export type DashboardDataMode = "live" | "fixture" | "degraded";

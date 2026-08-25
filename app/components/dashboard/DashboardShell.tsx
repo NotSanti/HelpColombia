@@ -15,6 +15,7 @@ import { Footer } from "@/components/dashboard/Footer";
 import { DataFreshnessBanner } from "@/components/dashboard/DataFreshnessBanner";
 import { SectionPlaceholders } from "@/components/dashboard/SectionPlaceholders";
 import { UpdatesSection } from "@/components/dashboard/UpdatesSection";
+import { NeedsSection } from "@/components/dashboard/NeedsSection";
 import type { MapController } from "@/components/map/ColombiaMap";
 import {
   MapChrome,
@@ -275,6 +276,11 @@ export function DashboardShell({ data }: { data: DashboardData }) {
         </section>
 
         <UpdatesSection updates={data.liveUpdates} dataMode={data.dataMode} />
+        <NeedsSection
+          regions={data.regions}
+          selectedRegionId={selectedRegionId}
+          onSelectRegion={selectRegion}
+        />
         <SectionPlaceholders />
       </main>
 

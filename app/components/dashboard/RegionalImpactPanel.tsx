@@ -21,14 +21,14 @@ export function RegionalImpactPanel({
   onHoverRegion?: (regionId: string | null) => void;
 }) {
   return (
-    <Panel id="regions" className={cn("flex flex-col p-2.5", className)}>
+    <Panel className={cn("flex flex-col p-2.5", className)}>
       <div className="mb-1.5 shrink-0">
         <PanelTitle className="mb-0.5 text-[11px]">
           Who needs help most?
         </PanelTitle>
         <p className="text-[11px] leading-snug text-text-secondary">
-          Select a region below or on the map for details. This list is the
-          accessible alternative to the map view.
+          Select a region below or on the map for details. Open Who Needs Help
+          for the full regional list.
         </p>
       </div>
       <ul className="grid grid-cols-2 gap-1.5 md:grid-cols-3 xl:grid-cols-6">
@@ -41,7 +41,23 @@ export function RegionalImpactPanel({
                 type="button"
                 id={`region-${region.id}`}
                 aria-pressed={selectedRegionId === region.id}
-                onClick={() => onSelectRegion?.(region.id)}
+                onClick={() => {
+                  onSelectRegion?.(region.id);
+                  const target = document.getElementById(
+                    `needs-region-${region.id}`,
+                  );
+                  target?.scrollIntoView({
+                    behavior: window.matchMedia(
+                      "(prefers-reduced-motion: reduce)",
+                    ).matches
+                      ? "auto"
+                      : "smooth",
+                    block: "start",
+                  });
+                  if (window.location.hash !== "#needs") {
+                    window.history.pushState(null, "", "#needs");
+                  }
+                }}
                 onMouseEnter={() => onHoverRegion?.(region.id)}
                 onMouseLeave={() => onHoverRegion?.(null)}
                 onFocus={() => onHoverRegion?.(region.id)}
@@ -101,7 +117,7 @@ export function RegionalImpactPanel({
                   </div>
                 </dl>
                 <span className="mt-1 inline-flex items-center gap-0.5 text-xxs font-medium text-severity-severe">
-                  View on map
+                  View details
                   <ArrowRight className="size-2.5" aria-hidden="true" />
                 </span>
               </button>

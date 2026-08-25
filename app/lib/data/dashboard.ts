@@ -349,28 +349,102 @@ async function loadDashboardFromSupabase(): Promise<DashboardData> {
       metricType: "affected",
       departmentName: region.name,
     });
+    const injuredResolved = resolveRegionalMetric({
+      observations,
+      metricType: "injured",
+      departmentName: region.name,
+    });
+    const displacedResolved = resolveRegionalMetric({
+      observations,
+      metricType: "displaced",
+      departmentName: region.name,
+    });
+
+    const formatRegionCount = (
+      resolved: ReturnType<typeof resolveRegionalMetric>,
+      display: string | null | undefined,
+      raw: number | null | undefined,
+    ): string | null => {
+      if (resolved?.displayValue) return resolved.displayValue;
+      if (display?.trim()) return display.trim();
+      if (raw != null) return new Intl.NumberFormat("en-US").format(raw);
+      return null;
+    };
+
+    const deaths =
+      formatRegionCount(
+        deathsResolved,
+        region.deaths_display,
+        region.deaths,
+      ) ?? "—";
+    const affected =
+      formatRegionCount(
+        affectedResolved,
+        region.affected_display,
+        region.affected_count,
+      ) ?? "—";
+    const injured = formatRegionCount(
+      injuredResolved,
+      null,
+      region.injured,
+    );
+    const displaced = formatRegionCount(
+      displacedResolved,
+      null,
+      region.displaced,
+    );
+
+    const sourceNames = [
+      ...new Set(
+        [
+          deathsResolved?.provenance.sourceName,
+          affectedResolved?.provenance.sourceName,
+          injuredResolved?.provenance.sourceName,
+          displacedResolved?.provenance.sourceName,
+        ].filter((name): name is string => Boolean(name)),
+      ),
+    ];
+
+    const lastUpdatedIso = [
+      deathsResolved?.provenance.reportedAt ??
+        deathsResolved?.provenance.retrievedAt,
+      affectedResolved?.provenance.reportedAt ??
+        affectedResolved?.provenance.retrievedAt,
+      injuredResolved?.provenance.reportedAt ??
+        injuredResolved?.provenance.retrievedAt,
+      displacedResolved?.provenance.reportedAt ??
+        displacedResolved?.provenance.retrievedAt,
+      region.updated_at,
+    ]
+      .filter((iso): iso is string => Boolean(iso))
+      .sort()
+      .at(-1);
 
     return {
       id: region.id,
       name: region.name,
       severity: region.severity as Severity,
-      deaths:
-        deathsResolved?.displayValue ??
-        region.deaths_display ??
-        (region.deaths != null
-          ? new Intl.NumberFormat("en-US").format(region.deaths)
-          : "—"),
-      affected:
-        affectedResolved?.displayValue ??
-        region.affected_display ??
-        (region.affected_count != null
-          ? new Intl.NumberFormat("en-US").format(region.affected_count)
-          : "—"),
-      sourceName:
-        deathsResolved?.provenance.sourceName ??
-        affectedResolved?.provenance.sourceName,
+      deaths,
+      affected,
+      injured,
+      displaced,
+      sourceName: sourceNames[0],
+      sourceNames,
+      lastUpdatedLabel: lastUpdatedIso
+        ? formatRelativeTime(lastUpdatedIso)
+        : null,
     };
   });
+
+  const severityRank: Record<Severity, number> = {
+    severe: 0,
+    high: 1,
+    moderate: 2,
+    low: 3,
+  };
+  regionRows.sort(
+    (a, b) => severityRank[a.severity] - severityRank[b.severity],
+  );
 
   const fundingFlows: NormalizedFundingFlow[] = (fundingRows ?? []).map(
     (row) => ({
