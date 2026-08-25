@@ -58,6 +58,18 @@ function formatOccurredTime(iso: string): string {
   return `${time} (Local time)`;
 }
 
+function formatPublishedLabel(iso: string | null): string | null {
+  if (!iso) return null;
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    timeZone: "America/Bogota",
+  }).format(new Date(iso));
+}
+
 function asAccent(
   value: string | null | undefined,
 ): "severe" | "info" | "high" {
@@ -194,7 +206,7 @@ async function loadDashboardFromSupabase(): Promise<DashboardData> {
       .select("*")
       .eq("disaster_id", disaster.id)
       .order("published_at", { ascending: false })
-      .limit(3),
+      .limit(40),
     supabase
       .from("sources")
       .select("id, name, trust_tier")
@@ -382,8 +394,12 @@ async function loadDashboardFromSupabase(): Promise<DashboardData> {
       (row.source_id ? sourceById.get(row.source_id)?.name : undefined) ??
       "Update",
     title: row.title,
-    relativeTime: formatRelativeTime(row.published_at),
+    relativeTime: formatRelativeTime(row.published_at ?? row.retrieved_at),
     accent: asUpdateAccent(row.accent),
+    summary: row.summary,
+    sourceUrl: row.source_url,
+    publishedAtLabel: formatPublishedLabel(row.published_at ?? row.retrieved_at),
+    retrievedAt: row.retrieved_at,
   }));
 
   const freshestMetricAt = resolvedFigures

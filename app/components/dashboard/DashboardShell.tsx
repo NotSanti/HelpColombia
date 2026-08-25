@@ -14,6 +14,7 @@ import { RegionalImpactPanel } from "@/components/dashboard/RegionalImpactPanel"
 import { Footer } from "@/components/dashboard/Footer";
 import { DataFreshnessBanner } from "@/components/dashboard/DataFreshnessBanner";
 import { SectionPlaceholders } from "@/components/dashboard/SectionPlaceholders";
+import { UpdatesSection } from "@/components/dashboard/UpdatesSection";
 import type { MapController } from "@/components/map/ColombiaMap";
 import {
   MapChrome,
@@ -273,6 +274,7 @@ export function DashboardShell({ data }: { data: DashboardData }) {
           </div>
         </section>
 
+        <UpdatesSection updates={data.liveUpdates} dataMode={data.dataMode} />
         <SectionPlaceholders />
       </main>
 

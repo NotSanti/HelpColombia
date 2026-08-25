@@ -70,6 +70,13 @@ export type LiveUpdateItem = {
   title: string;
   relativeTime: string;
   accent: "info" | "high" | "severe";
+  /** Plain-text summary when available — never raw upstream HTML. */
+  summary?: string | null;
+  sourceUrl?: string | null;
+  /** Absolute timestamp label for expanded feed. */
+  publishedAtLabel?: string | null;
+  /** ISO retrieved_at for staleness checks. */
+  retrievedAt?: string | null;
 };
 
 export type RegionImpact = {

@@ -25,7 +25,7 @@ export function LiveUpdatesCard({
   className?: string;
 }) {
   return (
-    <Panel className={cn("flex flex-col p-3.5", className)} id="updates">
+    <Panel className={cn("flex flex-col p-3.5", className)}>
       <div className="mb-2.5 flex shrink-0 items-center justify-between gap-3">
         <h2 className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-[0.12em] text-foreground uppercase">
           <span
@@ -42,7 +42,7 @@ export function LiveUpdatesCard({
         </a>
       </div>
       <ul className="grid min-h-0 flex-1 grid-cols-1 gap-0 sm:grid-cols-3">
-        {updates.map((update, index) => {
+        {updates.slice(0, 3).map((update, index) => {
           const Icon =
             icons[update.source as keyof typeof icons] ?? Droplets;
           return (
