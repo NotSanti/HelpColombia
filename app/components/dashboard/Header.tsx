@@ -49,7 +49,15 @@ export function Header({ className }: { className?: string }) {
           }
         }
         if (bestRatio > 0) {
-          setActiveSection(bestId);
+          setActiveSection((prev) => {
+            if (prev !== bestId) {
+              const nextHash = `#${bestId}`;
+              if (window.location.hash !== nextHash) {
+                window.history.replaceState(null, "", nextHash);
+              }
+            }
+            return bestId;
+          });
         }
       },
       {
@@ -119,7 +127,7 @@ export function Header({ className }: { className?: string }) {
       <div className="header-inner flex h-16 items-center justify-between gap-4 px-4 sm:px-6">
         <HelpColombiaLogo showTagline />
 
-        <nav className="hidden items-center gap-0.5 2xl:flex" aria-label="Primary">
+        <nav className="hidden items-center gap-0.5 xl:flex" aria-label="Primary">
           {PRIMARY_NAV.map((item) => {
             const isActive = activeSection === item.sectionId;
             return (
@@ -129,13 +137,20 @@ export function Header({ className }: { className?: string }) {
                 aria-current={isActive ? "true" : undefined}
                 onClick={(event) => handleNavClick(event, item.sectionId)}
                 className={cn(
-                  "rounded-md px-2.5 py-2 text-sm font-medium transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring xl:px-3",
+                  "rounded-md px-2 py-2 text-sm font-medium transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring 2xl:px-2.5",
                   isActive
                     ? "text-foreground underline decoration-severity-severe decoration-2 underline-offset-[14px]"
                     : "text-text-secondary",
                 )}
               >
-                {item.label}
+                {item.shortLabel ? (
+                  <>
+                    <span className="2xl:hidden">{item.shortLabel}</span>
+                    <span className="hidden 2xl:inline">{item.label}</span>
+                  </>
+                ) : (
+                  item.label
+                )}
               </a>
             );
           })}
@@ -158,7 +173,7 @@ export function Header({ className }: { className?: string }) {
             </a>
           </Button>
 
-          <div className="relative 2xl:hidden">
+          <div className="relative xl:hidden">
             <button
               type="button"
               className="flex size-10 cursor-pointer items-center justify-center rounded-md border border-border bg-panel text-foreground focus-visible:ring-2 focus-visible:ring-ring"

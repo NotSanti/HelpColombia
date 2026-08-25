@@ -46,7 +46,7 @@ export function Footer({
         />
 
         <a
-          href="#overview"
+          href="#impact"
           className="inline-flex items-center gap-1 text-x10 font-medium text-info underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-ring"
         >
           <Info className="size-3.5" aria-hidden="true" />

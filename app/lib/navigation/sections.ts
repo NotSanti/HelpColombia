@@ -12,6 +12,8 @@ export type SectionId = (typeof SECTION_IDS)[number];
 export type NavItem = {
   href: `#${SectionId}`;
   label: string;
+  /** Compact label when horizontal space is limited */
+  shortLabel?: string;
   sectionId: SectionId;
 };
 
@@ -19,10 +21,20 @@ export type NavItem = {
 export const PRIMARY_NAV: NavItem[] = [
   { href: "#overview", label: "Overview", sectionId: "overview" },
   { href: "#updates", label: "Updates", sectionId: "updates" },
-  { href: "#needs", label: "Who Needs Help", sectionId: "needs" },
-  { href: "#response", label: "Who Is Helping", sectionId: "response" },
+  {
+    href: "#needs",
+    label: "Who Needs Help",
+    shortLabel: "Needs",
+    sectionId: "needs",
+  },
+  {
+    href: "#response",
+    label: "Who Is Helping",
+    shortLabel: "Response",
+    sectionId: "response",
+  },
   { href: "#impact", label: "Impact", sectionId: "impact" },
-  { href: "#help", label: "How to Help", sectionId: "help" },
+  { href: "#help", label: "How to Help", shortLabel: "Help", sectionId: "help" },
 ];
 
 export const SECTION_PLACEHOLDERS: Array<{

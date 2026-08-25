@@ -23,7 +23,7 @@ export function HelpSection({
       id="help"
       aria-labelledby="help-heading"
       className={cn(
-        "scroll-mt-section border-t border-border/50 bg-background px-4 py-16 sm:px-6 md:py-20",
+        "scroll-mt-section border-t border-border/50 bg-background px-4 py-12 sm:px-6 md:py-16",
         className,
       )}
     >
