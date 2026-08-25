@@ -22,11 +22,19 @@ function scrollToSection(sectionId: SectionId) {
   });
 }
 
-export function Header({ className }: { className?: string }) {
+export function Header({
+  className,
+  isOnePage = false,
+}: {
+  className?: string;
+  isOnePage?: boolean;
+}) {
   const [activeSection, setActiveSection] = useState<SectionId>("overview");
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
+    if (isOnePage) return;
+
     const elements = SECTION_IDS.map((id) => document.getElementById(id)).filter(
       (el): el is HTMLElement => el != null,
     );
@@ -68,9 +76,11 @@ export function Header({ className }: { className?: string }) {
 
     for (const el of elements) observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [isOnePage]);
 
   useEffect(() => {
+    if (isOnePage) return;
+
     const onHash = () => {
       const hash = window.location.hash.replace("#", "") as SectionId;
       if (SECTION_IDS.includes(hash)) {
@@ -90,7 +100,6 @@ export function Header({ className }: { className?: string }) {
       }
     };
 
-    // Initial deep link e.g. /#impact — wait a frame so layout has settled
     if (window.location.hash) {
       requestAnimationFrame(() => onHash());
     }
@@ -101,7 +110,7 @@ export function Header({ className }: { className?: string }) {
       window.removeEventListener("hashchange", onHash);
       window.removeEventListener("popstate", onPopState);
     };
-  }, []);
+  }, [isOnePage]);
 
   function handleNavClick(
     event: React.MouseEvent<HTMLAnchorElement>,
@@ -120,107 +129,115 @@ export function Header({ className }: { className?: string }) {
   return (
     <header
       className={cn(
-        "chrome-surface sticky top-0 z-40 border-b border-border/40",
+        "chrome-surface chrome-surface-nav fixed inset-x-0 top-0 z-40 border-b border-border/30",
         className,
       )}
     >
       <div className="header-inner flex h-16 items-center justify-between gap-4 px-4 sm:px-6">
         <HelpColombiaLogo showTagline />
 
-        <nav className="hidden items-center gap-0.5 xl:flex" aria-label="Primary">
-          {PRIMARY_NAV.map((item) => {
-            const isActive = activeSection === item.sectionId;
-            return (
-              <a
-                key={item.sectionId}
-                href={item.href}
-                aria-current={isActive ? "true" : undefined}
-                onClick={(event) => handleNavClick(event, item.sectionId)}
-                className={cn(
-                  "rounded-md px-2 py-2 text-sm font-medium transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring 2xl:px-2.5",
-                  isActive
-                    ? "text-foreground underline decoration-severity-severe decoration-2 underline-offset-[14px]"
-                    : "text-text-secondary",
-                )}
-              >
-                {item.shortLabel ? (
-                  <>
-                    <span className="2xl:hidden">{item.shortLabel}</span>
-                    <span className="hidden 2xl:inline">{item.label}</span>
-                  </>
-                ) : (
-                  item.label
-                )}
-              </a>
-            );
-          })}
-        </nav>
+        {!isOnePage ? (
+          <nav className="hidden items-center gap-0.5 xl:flex" aria-label="Primary">
+            {PRIMARY_NAV.map((item) => {
+              const isActive = activeSection === item.sectionId;
+              return (
+                <a
+                  key={item.sectionId}
+                  href={item.href}
+                  aria-current={isActive ? "true" : undefined}
+                  onClick={(event) => handleNavClick(event, item.sectionId)}
+                  className={cn(
+                    "rounded-md px-2 py-2 text-sm font-medium transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring 2xl:px-2.5",
+                    isActive
+                      ? "text-foreground underline decoration-severity-severe decoration-2 underline-offset-[14px]"
+                      : "text-text-secondary",
+                  )}
+                >
+                  {item.shortLabel ? (
+                    <>
+                      <span className="2xl:hidden">{item.shortLabel}</span>
+                      <span className="hidden 2xl:inline">{item.label}</span>
+                    </>
+                  ) : (
+                    item.label
+                  )}
+                </a>
+              );
+            })}
+          </nav>
+        ) : null}
 
         <div className="flex items-center gap-2">
           <ThemeToggle />
 
-          <Button
-            asChild
-            size="lg"
-            className="hidden h-10 gap-2 px-5 text-xs font-semibold tracking-wide uppercase sm:inline-flex"
-          >
-            <a
-              href="#help"
-              onClick={(event) => handleNavClick(event, "help")}
-            >
-              <Heart className="size-4" aria-hidden="true" />
-              Donate Now
-            </a>
-          </Button>
-
-          <div className="relative xl:hidden">
-            <button
-              type="button"
-              className="flex size-10 cursor-pointer items-center justify-center rounded-md border border-border bg-panel text-foreground focus-visible:ring-2 focus-visible:ring-ring"
-              aria-label={menuOpen ? "Close menu" : "Open menu"}
-              aria-expanded={menuOpen}
-              aria-controls="mobile-primary-nav"
-              onClick={() => setMenuOpen((open) => !open)}
-            >
-              <Menu className="size-4" aria-hidden="true" />
-            </button>
-            {menuOpen ? (
-              <div
-                id="mobile-primary-nav"
-                className="absolute top-full right-0 z-40 mt-2 w-56 rounded-lg border border-border bg-panel-raised p-2 shadow-xl"
+          {!isOnePage ? (
+            <>
+              <Button
+                asChild
+                size="lg"
+                className="hidden h-10 gap-2 px-5 text-xs font-semibold tracking-wide uppercase sm:inline-flex"
               >
-                <nav className="flex flex-col gap-1" aria-label="Mobile">
-                  {PRIMARY_NAV.map((item) => {
-                    const isActive = activeSection === item.sectionId;
-                    return (
-                      <a
-                        key={`mobile-${item.sectionId}`}
-                        href={item.href}
-                        aria-current={isActive ? "true" : undefined}
-                        onClick={(event) => handleNavClick(event, item.sectionId)}
-                        className={cn(
-                          "rounded-md px-3 py-2 text-sm font-medium focus-visible:ring-2 focus-visible:ring-ring",
-                          isActive
-                            ? "bg-panel text-foreground"
-                            : "text-text-secondary hover:bg-panel hover:text-foreground",
-                        )}
-                      >
-                        {item.label}
-                      </a>
-                    );
-                  })}
-                  <a
-                    href="#help"
-                    onClick={(event) => handleNavClick(event, "help")}
-                    className="mt-1 inline-flex items-center justify-center gap-1.5 rounded-md bg-primary px-3 py-2.5 text-xs font-semibold tracking-wide text-primary-foreground uppercase focus-visible:ring-2 focus-visible:ring-ring"
+                <a
+                  href="#help"
+                  onClick={(event) => handleNavClick(event, "help")}
+                >
+                  <Heart className="size-4" aria-hidden="true" />
+                  Donate Now
+                </a>
+              </Button>
+
+              <div className="relative xl:hidden">
+                <button
+                  type="button"
+                  className="flex size-10 cursor-pointer items-center justify-center rounded-md border border-border bg-panel text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+                  aria-label={menuOpen ? "Close menu" : "Open menu"}
+                  aria-expanded={menuOpen}
+                  aria-controls="mobile-primary-nav"
+                  onClick={() => setMenuOpen((open) => !open)}
+                >
+                  <Menu className="size-4" aria-hidden="true" />
+                </button>
+                {menuOpen ? (
+                  <div
+                    id="mobile-primary-nav"
+                    className="absolute top-full right-0 z-40 mt-2 w-56 rounded-lg border border-border bg-panel-raised p-2 shadow-xl"
                   >
-                    <Heart className="size-3.5" aria-hidden="true" />
-                    Donate Now
-                  </a>
-                </nav>
+                    <nav className="flex flex-col gap-1" aria-label="Mobile">
+                      {PRIMARY_NAV.map((item) => {
+                        const isActive = activeSection === item.sectionId;
+                        return (
+                          <a
+                            key={`mobile-${item.sectionId}`}
+                            href={item.href}
+                            aria-current={isActive ? "true" : undefined}
+                            onClick={(event) =>
+                              handleNavClick(event, item.sectionId)
+                            }
+                            className={cn(
+                              "rounded-md px-3 py-2 text-sm font-medium focus-visible:ring-2 focus-visible:ring-ring",
+                              isActive
+                                ? "bg-panel text-foreground"
+                                : "text-text-secondary hover:bg-panel hover:text-foreground",
+                            )}
+                          >
+                            {item.label}
+                          </a>
+                        );
+                      })}
+                      <a
+                        href="#help"
+                        onClick={(event) => handleNavClick(event, "help")}
+                        className="mt-1 inline-flex items-center justify-center gap-1.5 rounded-md bg-primary px-3 py-2.5 text-xs font-semibold tracking-wide text-primary-foreground uppercase focus-visible:ring-2 focus-visible:ring-ring"
+                      >
+                        <Heart className="size-3.5" aria-hidden="true" />
+                        Donate Now
+                      </a>
+                    </nav>
+                  </div>
+                ) : null}
               </div>
-            ) : null}
-          </div>
+            </>
+          ) : null}
         </div>
       </div>
     </header>

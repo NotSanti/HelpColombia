@@ -6,9 +6,11 @@ import { cn } from "@/lib/utils";
 export function WhatHappenedCard({
   data,
   className,
+  showSectionLinks = true,
 }: {
   data: EarthquakeFacts;
   className?: string;
+  showSectionLinks?: boolean;
 }) {
   const rows = [
     { icon: CalendarDays, value: data.occurredAtLabel },
@@ -61,12 +63,14 @@ export function WhatHappenedCard({
           ))}
         </dl>
       </div>
-      <a
-        href="#updates"
-        className="mt-auto inline-flex shrink-0 pt-1.5 text-x10 font-medium text-severity-severe underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-ring"
-      >
-        View full timeline →
-      </a>
+      {showSectionLinks ? (
+        <a
+          href="#updates"
+          className="mt-auto inline-flex shrink-0 pt-1.5 text-x10 font-medium text-severity-severe underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          View full timeline →
+        </a>
+      ) : null}
     </Panel>
   );
 }

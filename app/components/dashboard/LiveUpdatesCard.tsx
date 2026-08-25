@@ -20,9 +20,11 @@ const icons = {
 export function LiveUpdatesCard({
   updates,
   className,
+  showSectionLinks = true,
 }: {
   updates: LiveUpdateItem[];
   className?: string;
+  showSectionLinks?: boolean;
 }) {
   return (
     <Panel className={cn("flex flex-col p-3.5", className)}>
@@ -34,12 +36,14 @@ export function LiveUpdatesCard({
           />
           Live updates
         </h2>
-        <a
-          href="#updates"
-          className="text-x10 font-medium text-severity-severe underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          View all updates →
-        </a>
+        {showSectionLinks ? (
+          <a
+            href="#updates"
+            className="text-x10 font-medium text-severity-severe underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            View all updates →
+          </a>
+        ) : null}
       </div>
       <ul className="grid min-h-0 flex-1 grid-cols-1 gap-0 sm:grid-cols-3">
         {updates.slice(0, 3).map((update, index) => {

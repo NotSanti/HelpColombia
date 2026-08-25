@@ -25,6 +25,7 @@ import {
   MapVignette,
 } from "@/components/map/MapBackground";
 import { mapPublicUrls } from "@/lib/fixtures/map-design";
+import { cn } from "@/lib/utils";
 
 const ColombiaMap = dynamic(
   () =>
@@ -49,7 +50,13 @@ function prefetchMapAssets() {
   }
 }
 
-export function DashboardShell({ data }: { data: DashboardData }) {
+export function DashboardShell({
+  data,
+  isOnePage = false,
+}: {
+  data: DashboardData;
+  isOnePage?: boolean;
+}) {
   const [selectedRegionId, setSelectedRegionId] = useState<string | null>(null);
   const [hoveredRegionId, setHoveredRegionId] = useState<string | null>(null);
   const [isDesktop, setIsDesktop] = useState(false);
@@ -112,20 +119,37 @@ export function DashboardShell({ data }: { data: DashboardData }) {
         : null,
   };
 
+  const showFreshnessBanner = data.dataMode !== "live";
+  /** Clearance under fixed header (and optional freshness banner), plus a bit of breathing room. */
+  const overviewTopPad = showFreshnessBanner ? "pt-32" : "pt-20";
+
   return (
-    <div className="relative min-h-dvh bg-background">
-      <Header />
+    <div
+      className={
+        isOnePage
+          ? "relative flex h-dvh flex-col overflow-hidden bg-background"
+          : "relative min-h-dvh bg-background"
+      }
+    >
+      <Header isOnePage={isOnePage} />
       <DataFreshnessBanner
         mode={data.dataMode}
         lastUpdatedLabel={data.liveStatus.lastUpdatedLabel}
-        className="relative z-30"
+        className="fixed inset-x-0 top-16 z-40"
       />
 
-      <main id="main-content">
+      <main
+        id="main-content"
+        className={isOnePage ? "relative z-0 min-h-0 flex-1" : "relative z-0"}
+      >
         <section
           id="overview"
           aria-label="Overview dashboard"
-          className="relative flex h-[calc(100dvh-4rem)] min-h-[32rem] flex-col overflow-hidden scroll-mt-section"
+          className={
+            isOnePage
+              ? "relative flex h-full min-h-0 flex-col overflow-hidden"
+              : "relative flex h-dvh min-h-[32rem] flex-col overflow-hidden scroll-mt-0"
+          }
         >
           {/*
             Paint with the cards on xl (CSS), not after the JS media-query flip.
@@ -173,7 +197,12 @@ export function DashboardShell({ data }: { data: DashboardData }) {
             </section>
 
             {/* Mobile / tablet stacked flow */}
-            <div className="pointer-events-auto relative z-10 flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-2 py-4 xl:hidden">
+            <div
+              className={cn(
+                "pointer-events-auto relative z-10 flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-2 pb-4 xl:hidden",
+                overviewTopPad,
+              )}
+            >
               <LiveUpdateCard data={data.liveStatus} />
               <section
                 aria-label="Impact map of Colombia"
@@ -199,23 +228,39 @@ export function DashboardShell({ data }: { data: DashboardData }) {
                   className="absolute right-3 bottom-3 z-10 h-auto w-[122px]"
                 />
               </section>
-              <WhatHappenedCard data={data.earthquake} />
-              <KeyFiguresCard figures={data.keyFigures} />
-              <HelpCard organizations={data.organizations} />
-              <FundingCard totals={data.fundingTotals} sectors={data.sectors} />
-              <LiveUpdatesCard updates={data.liveUpdates} />
+              <WhatHappenedCard data={data.earthquake} showSectionLinks={!isOnePage} />
+              <KeyFiguresCard figures={data.keyFigures} showSectionLinks={!isOnePage} />
+              <HelpCard
+                organizations={data.organizations}
+                showSectionLinks={!isOnePage}
+              />
+              <FundingCard
+                totals={data.fundingTotals}
+                sectors={data.sectors}
+                showSectionLinks={!isOnePage}
+              />
+              <LiveUpdatesCard
+                updates={data.liveUpdates}
+                showSectionLinks={!isOnePage}
+              />
               <RegionalImpactPanel
                 regions={data.regions}
                 selectedRegionId={selectedRegionId}
                 hoveredRegionId={hoveredRegionId}
                 onSelectRegion={selectRegion}
                 onHoverRegion={setHoveredRegionId}
+                linkToNeeds={!isOnePage}
               />
             </div>
 
             {/* Desktop: 3 columns + full-width bottom.
                 pointer-events-none so empty map areas stay draggable; cards re-enable hit testing. */}
-            <div className="pointer-events-none relative z-10 hidden min-h-0 flex-1 flex-col gap-3 overflow-hidden px-2 pt-3 pb-px xl:flex">
+            <div
+              className={cn(
+                "pointer-events-none relative z-10 hidden min-h-0 flex-1 flex-col gap-3 overflow-hidden px-2 pb-px xl:flex",
+                overviewTopPad,
+              )}
+            >
               <div className="relative grid min-h-0 flex-1 grid-cols-[minmax(290px,0.95fr)_minmax(0,1.45fr)_minmax(340px,1fr)] gap-3 overflow-hidden">
                 <aside className="pointer-events-auto flex min-h-0 flex-col gap-2.5 overflow-visible">
                   <div className="flex min-h-0 max-w-[calc(16rem+0.75rem+34px)] flex-[1.2] items-stretch gap-3">
@@ -233,16 +278,21 @@ export function DashboardShell({ data }: { data: DashboardData }) {
                   <WhatHappenedCard
                     data={data.earthquake}
                     className="min-h-0 max-w-[20rem] flex-[0.95] overflow-y-auto"
+                    showSectionLinks={!isOnePage}
                   />
                   <KeyFiguresCard
                     figures={data.keyFigures}
                     className="min-h-0 max-w-[20rem] flex-[1.35] overflow-y-auto"
+                    showSectionLinks={!isOnePage}
                   />
                 </aside>
 
                 <div className="pointer-events-none relative flex min-h-0 flex-col overflow-hidden">
                   <div className="pointer-events-auto relative z-10 mt-auto w-full max-w-[760px] self-center pb-0.5">
-                    <LiveUpdatesCard updates={data.liveUpdates} />
+                    <LiveUpdatesCard
+                      updates={data.liveUpdates}
+                      showSectionLinks={!isOnePage}
+                    />
                   </div>
                 </div>
 
@@ -255,12 +305,14 @@ export function DashboardShell({ data }: { data: DashboardData }) {
                     <HelpCard
                       organizations={data.organizations}
                       className="h-full min-h-0 w-full max-w-[20rem] flex-1 overflow-hidden"
+                      showSectionLinks={!isOnePage}
                     />
                   </div>
                   <FundingCard
                     totals={data.fundingTotals}
                     sectors={data.sectors}
                     className="min-h-0 w-full max-w-[20rem] overflow-y-auto"
+                    showSectionLinks={!isOnePage}
                   />
                 </aside>
               </div>
@@ -272,27 +324,36 @@ export function DashboardShell({ data }: { data: DashboardData }) {
                 hoveredRegionId={hoveredRegionId}
                 onSelectRegion={selectRegion}
                 onHoverRegion={setHoveredRegionId}
+                linkToNeeds={!isOnePage}
               />
             </div>
           </div>
         </section>
 
-        <UpdatesSection updates={data.liveUpdates} dataMode={data.dataMode} />
-        <NeedsSection
-          regions={data.regions}
-          selectedRegionId={selectedRegionId}
-          onSelectRegion={selectRegion}
-        />
-        <ResponseSection organizations={data.organizations} />
-        <ImpactSection
-          keyFigures={data.keyFigures}
-          regions={data.regions}
-          observations={data.impactObservations}
-        />
-        <HelpSection organizations={data.organizations} />
+        {!isOnePage ? (
+          <>
+            <UpdatesSection updates={data.liveUpdates} dataMode={data.dataMode} />
+            <NeedsSection
+              regions={data.regions}
+              selectedRegionId={selectedRegionId}
+              onSelectRegion={selectRegion}
+            />
+            <ResponseSection organizations={data.organizations} />
+            <ImpactSection
+              keyFigures={data.keyFigures}
+              regions={data.regions}
+              observations={data.impactObservations}
+            />
+            <HelpSection organizations={data.organizations} />
+          </>
+        ) : null}
       </main>
 
-      <Footer className="relative z-30" dataSources={data.dataSources} />
+      <Footer
+        className="relative z-30 shrink-0"
+        dataSources={data.dataSources}
+        isOnePage={isOnePage}
+      />
     </div>
   );
 }

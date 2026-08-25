@@ -13,10 +13,12 @@ export function FundingCard({
   totals,
   sectors,
   className,
+  showSectionLinks = true,
 }: {
   totals: FundingTotalItem[];
   sectors: FundingSector[];
   className?: string;
+  showSectionLinks?: boolean;
 }) {
   return (
     <Panel className={cn("flex min-h-0 flex-col px-2.5 pt-2.5 pb-1.5", className)}>
@@ -88,12 +90,14 @@ export function FundingCard({
             </li>
           ))}
         </ul>
-        <a
-          href="#impact"
-          className="mt-1.5 inline-flex text-x10 font-medium text-severity-severe underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          See full funding details →
-        </a>
+        {showSectionLinks ? (
+          <a
+            href="#impact"
+            className="mt-1.5 inline-flex text-x10 font-medium text-severity-severe underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            See full funding details →
+          </a>
+        ) : null}
       </div>
     </Panel>
   );

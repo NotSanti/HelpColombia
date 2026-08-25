@@ -20,12 +20,14 @@ const icons = {
 export function KeyFiguresCard({
   figures,
   className,
+  showSectionLinks = true,
 }: {
   figures: KeyFigure[];
   className?: string;
+  showSectionLinks?: boolean;
 }) {
   return (
-    <Panel className={cn("flex min-h-0 flex-col px-4 pt-3.5 pb-2.5", className)} id="impact">
+    <Panel className={cn("flex min-h-0 flex-col px-4 pt-3.5 pb-2.5", className)}>
       <PanelTitle className="mb-1.5 shrink-0">Key figures</PanelTitle>
       <ul className="grid min-h-0 flex-1 grid-cols-2 content-center">
         {figures.map((figure, index) => {
@@ -83,12 +85,14 @@ export function KeyFiguresCard({
           );
         })}
       </ul>
-      <a
-        href="#needs"
-        className="mt-auto inline-flex shrink-0 pt-2 text-x10 font-medium text-severity-severe underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-ring"
-      >
-        See affected areas →
-      </a>
+      {showSectionLinks ? (
+        <a
+          href="#needs"
+          className="mt-auto inline-flex shrink-0 pt-2 text-x10 font-medium text-severity-severe underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          See affected areas →
+        </a>
+      ) : null}
     </Panel>
   );
 }

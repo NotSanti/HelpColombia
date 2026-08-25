@@ -212,6 +212,13 @@
   -webkit-backdrop-filter: blur(16px) saturate(1.15);
 }
 
+/* Navbar: translucent glass over the map */
+.chrome-surface-nav {
+  background: color-mix(in srgb, var(--panel) 72%, transparent);
+  backdrop-filter: blur(18px) saturate(1.15);
+  -webkit-backdrop-filter: blur(18px) saturate(1.15);
+}
+
 .panel-dashed {
   background: color-mix(in srgb, var(--panel) 70%, transparent);
   border: 1px dashed color-mix(in srgb, var(--border) 70%, transparent);

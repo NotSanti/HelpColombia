@@ -4,9 +4,11 @@ import { cn } from "@/lib/utils";
 export function Footer({
   dataSources,
   className,
+  isOnePage = false,
 }: {
   dataSources: string[];
   className?: string;
+  isOnePage?: boolean;
 }) {
   return (
     <footer className={cn("chrome-surface relative z-30", className)}>
@@ -40,18 +42,22 @@ export function Footer({
           <span className="text-foreground">{dataSources.join(", ")}</span>
         </p>
 
-        <span
-          className="hidden h-4 w-px bg-border xl:block"
-          aria-hidden="true"
-        />
+        {!isOnePage ? (
+          <>
+            <span
+              className="hidden h-4 w-px bg-border xl:block"
+              aria-hidden="true"
+            />
 
-        <a
-          href="#impact"
-          className="inline-flex items-center gap-1 text-x10 font-medium text-info underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          <Info className="size-3.5" aria-hidden="true" />
-          About our data →
-        </a>
+            <a
+              href="#impact"
+              className="inline-flex items-center gap-1 text-x10 font-medium text-info underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <Info className="size-3.5" aria-hidden="true" />
+              About our data →
+            </a>
+          </>
+        ) : null}
       </div>
     </footer>
   );

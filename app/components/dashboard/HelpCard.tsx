@@ -52,9 +52,11 @@ function orgVisual(name: string) {
 export function HelpCard({
   organizations,
   className,
+  showSectionLinks = true,
 }: {
   organizations: OrganizationHelp[];
   className?: string;
+  showSectionLinks?: boolean;
 }) {
   return (
     <Panel
@@ -147,12 +149,14 @@ export function HelpCard({
         })}
       </ul>
 
-      <a
-        href="#help"
-        className="mt-1.5 inline-flex shrink-0 text-[11px] font-normal text-severity-severe underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-ring"
-      >
-        See more ways to help →
-      </a>
+      {showSectionLinks ? (
+        <a
+          href="#help"
+          className="mt-1.5 inline-flex shrink-0 text-[11px] font-normal text-severity-severe underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          See more ways to help →
+        </a>
+      ) : null}
     </Panel>
   );
 }

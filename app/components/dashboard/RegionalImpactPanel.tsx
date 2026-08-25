@@ -12,6 +12,7 @@ export function RegionalImpactPanel({
   hoveredRegionId,
   onSelectRegion,
   onHoverRegion,
+  linkToNeeds = true,
 }: {
   regions: RegionImpact[];
   className?: string;
@@ -19,6 +20,7 @@ export function RegionalImpactPanel({
   hoveredRegionId?: string | null;
   onSelectRegion?: (regionId: string) => void;
   onHoverRegion?: (regionId: string | null) => void;
+  linkToNeeds?: boolean;
 }) {
   return (
     <Panel className={cn("flex flex-col p-2.5", className)}>
@@ -27,8 +29,9 @@ export function RegionalImpactPanel({
           Who needs help most?
         </PanelTitle>
         <p className="text-[11px] leading-snug text-text-secondary">
-          Select a region below or on the map for details. Open Who Needs Help
-          for the full regional list.
+          {linkToNeeds
+            ? "Select a region below or on the map for details. Open Who Needs Help for the full regional list."
+            : "Select a region below or on the map for details. This list is the accessible alternative to the map view."}
         </p>
       </div>
       <ul className="grid grid-cols-2 gap-1.5 md:grid-cols-3 xl:grid-cols-6">
@@ -43,6 +46,7 @@ export function RegionalImpactPanel({
                 aria-pressed={selectedRegionId === region.id}
                 onClick={() => {
                   onSelectRegion?.(region.id);
+                  if (!linkToNeeds) return;
                   const target = document.getElementById(
                     `needs-region-${region.id}`,
                   );
@@ -117,7 +121,7 @@ export function RegionalImpactPanel({
                   </div>
                 </dl>
                 <span className="mt-1 inline-flex items-center gap-0.5 text-xxs font-medium text-severity-severe">
-                  View details
+                  {linkToNeeds ? "View details" : "View on map"}
                   <ArrowRight className="size-2.5" aria-hidden="true" />
                 </span>
               </button>
