@@ -1,0 +1,36 @@
+{
+  "disasterSlug": "colombia-earthquake-2025-08-17",
+  "sourceName": "UNGRD",
+  "sourceUrl": "https://portal.gestiondelriesgo.gov.co/",
+  "reportedAt": "2026-08-24T11:30:00.000Z",
+  "metrics": [
+    {
+      "metricType": "deaths",
+      "value": 329,
+      "displayValue": "329",
+      "detail": "UNGRD national balance — verify against latest portal bulletin before import",
+      "unit": "count"
+    },
+    {
+      "metricType": "injured",
+      "value": 4592,
+      "displayValue": "4,592",
+      "detail": "UNGRD national balance (news cut 24 Aug 2026 06:30 local) — confirm on portal",
+      "unit": "count"
+    },
+    {
+      "metricType": "affected",
+      "value": 324157,
+      "displayValue": "324,157",
+      "detail": "People affected — 159,924 families / 16 departments (UNGRD cut cited 24 Aug 2026)",
+      "unit": "count"
+    },
+    {
+      "metricType": "aftershocks",
+      "value": 47,
+      "displayValue": "47+",
+      "detail": "SGC-confirmed aftershocks on day of mainshock (10 Aug 2026); replace with latest SGC count if preferred",
+      "unit": "count"
+    }
+  ]
+}

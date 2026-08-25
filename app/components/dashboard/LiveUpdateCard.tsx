@@ -26,10 +26,10 @@ export function LiveUpdateCard({
           />
           Live update
         </p>
-        <h2 className="max-w-[11ch] text-[22px] leading-[1.1] font-medium tracking-tight text-foreground">
+        <h2 className=" text-[22px] leading-[1.1] font-medium tracking-tight text-foreground">
           {data.headline}
         </h2>
-        <p className="mt-1 line-clamp-5 text-[11px] leading-snug text-text-secondary">
+        <p className="mt-1 text-[11px] leading-snug text-text-secondary">
           {data.summary}
         </p>
       </div>

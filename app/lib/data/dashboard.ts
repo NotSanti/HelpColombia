@@ -8,7 +8,7 @@ import {
   resolveRegionalMetric,
   type ImpactMetricObservation,
 } from "@/lib/metrics/resolve-impact-metrics";
-import { aggregateFundingFlows } from "@/lib/funding/aggregate";
+import { aggregateFundingFlows, filterFundingFlowsSince } from "@/lib/funding/aggregate";
 import type { NormalizedFundingFlow } from "@/lib/sources/fts";
 import {
   buildIfrcHelpSummary,
@@ -94,6 +94,7 @@ function asFigureTone(metricType: string): KeyFigure["tone"] {
     case "affected":
       return "high";
     case "displaced":
+    case "aftershocks":
       return "low";
     default:
       return "info";
@@ -107,9 +108,11 @@ function formatMetricLabel(metricType: string): string {
     case "injured":
       return "Injured";
     case "affected":
-      return "People affected";
+      return "Affected";
     case "displaced":
       return "Displaced";
+    case "aftershocks":
+      return "Aftershocks";
     default:
       return metricType;
   }
@@ -288,7 +291,11 @@ async function loadDashboardFromSupabase(): Promise<DashboardData> {
   const keyFigures: KeyFigure[] = resolvedFigures.map((resolved) => ({
     id: resolved.metricType,
     label: formatMetricLabel(resolved.metricType),
-    detail: resolved.detail ?? undefined,
+    // Keep short provenance notes only; long import notes break the overview card.
+    detail:
+      resolved.detail && resolved.detail.length <= 28
+        ? resolved.detail
+        : undefined,
     value: resolved.displayValue,
     tone: asFigureTone(resolved.metricType),
     sourceName: resolved.provenance.sourceName,
@@ -494,7 +501,13 @@ async function loadDashboardFromSupabase(): Promise<DashboardData> {
       retrievedAt: row.retrieved_at,
     }),
   );
-  const funding = aggregateFundingFlows(fundingFlows);
+  // Scope card totals to flows reported on/after the disaster start.
+  const scopedFundingFlows = filterFundingFlowsSince(
+    fundingFlows,
+    disaster.occurred_at,
+  );
+  const funding = aggregateFundingFlows(scopedFundingFlows);
+  const hasLiveFunding = fundingFlows.length > 0;
 
   const liveUpdates: LiveUpdateItem[] = (updates ?? []).map((row) => ({
     id: row.id,
@@ -572,12 +585,10 @@ async function loadDashboardFromSupabase(): Promise<DashboardData> {
       organizationRows.length > 0
         ? organizationRows
         : dashboardFixture.organizations,
-    fundingTotals:
-      fundingFlows.length > 0
-        ? funding.totals
-        : dashboardFixture.fundingTotals,
-    sectors:
-      fundingFlows.length > 0 ? funding.sectors : dashboardFixture.sectors,
+    fundingTotals: hasLiveFunding
+      ? funding.totals
+      : dashboardFixture.fundingTotals,
+    sectors: hasLiveFunding ? funding.sectors : dashboardFixture.sectors,
     liveUpdates:
       liveUpdates.length > 0 ? liveUpdates : dashboardFixture.liveUpdates,
     regions: regionRows.length > 0 ? regionRows : dashboardFixture.regions,

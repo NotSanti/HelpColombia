@@ -7,6 +7,7 @@ import {
 } from "@/lib/sources/fts";
 import {
   aggregateFundingFlows,
+  filterFundingFlowsSince,
   mapSectorLabel,
 } from "@/lib/funding/aggregate";
 
@@ -108,6 +109,52 @@ describe("aggregateFundingFlows", () => {
     expect(totals.find((t) => t.id === "pledged")?.value).toContain("$");
     expect(sectors.length).toBeGreaterThan(0);
     expect(sectors.reduce((acc, s) => acc + s.percent, 0)).toBe(100);
+  });
+});
+
+describe("filterFundingFlowsSince", () => {
+  it("keeps only flows on or after the cutoff", () => {
+    const flows = [
+      {
+        externalId: "old",
+        donor: "A",
+        recipient: "B",
+        amountUsd: 1,
+        status: "committed" as const,
+        upstreamStatus: "commitment",
+        sector: "Health",
+        sourceUrl: "",
+        reportedAt: "2026-08-09T12:00:00.000Z",
+        retrievedAt: "2026-08-24T00:00:00.000Z",
+      },
+      {
+        externalId: "new",
+        donor: "A",
+        recipient: "B",
+        amountUsd: 2,
+        status: "received" as const,
+        upstreamStatus: "paid",
+        sector: "Health",
+        sourceUrl: "",
+        reportedAt: "2026-08-10T12:34:00.000Z",
+        retrievedAt: "2026-08-24T00:00:00.000Z",
+      },
+      {
+        externalId: "undated",
+        donor: "A",
+        recipient: "B",
+        amountUsd: 3,
+        status: "pledged" as const,
+        upstreamStatus: "pledge",
+        sector: "Health",
+        sourceUrl: "",
+        reportedAt: null,
+        retrievedAt: "2026-08-24T00:00:00.000Z",
+      },
+    ];
+
+    const scoped = filterFundingFlowsSince(flows, "2026-08-10T12:34:00.000Z");
+    expect(scoped.map((f) => f.externalId)).toEqual(["new"]);
   });
 });
 

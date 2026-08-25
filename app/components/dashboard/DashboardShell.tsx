@@ -282,7 +282,7 @@ export function DashboardShell({
                   />
                   <KeyFiguresCard
                     figures={data.keyFigures}
-                    className="min-h-0 max-w-[20rem] flex-[1.35] overflow-y-auto"
+                    className="min-h-0 max-w-[20rem] flex-[1.05] overflow-hidden"
                     showSectionLinks={!isOnePage}
                   />
                 </aside>

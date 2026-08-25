@@ -136,13 +136,17 @@ export function resolveNationalKeyFigures(
     "injured",
     "affected",
     "displaced",
+    // Fallback 4th slot when displaced is not yet reported.
+    "aftershocks",
   ],
+  maxFigures = 4,
 ): ResolvedImpactMetric[] {
   return metricTypes
     .map((metricType) =>
       resolveImpactMetric({ observations, metricType, department: null }),
     )
-    .filter((row): row is ResolvedImpactMetric => Boolean(row));
+    .filter((row): row is ResolvedImpactMetric => Boolean(row))
+    .slice(0, maxFigures);
 }
 
 export function resolveRegionalMetric(input: {

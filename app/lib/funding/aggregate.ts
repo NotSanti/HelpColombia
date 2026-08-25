@@ -53,6 +53,25 @@ export type FundingAggregates = {
 };
 
 /**
+ * Keep flows reported on/after a disaster start instant.
+ * Flows without reportedAt are excluded when a cutoff is set (conservative).
+ */
+export function filterFundingFlowsSince(
+  flows: NormalizedFundingFlow[],
+  sinceIso: string | null | undefined,
+): NormalizedFundingFlow[] {
+  if (!sinceIso) return flows;
+  const sinceMs = Date.parse(sinceIso);
+  if (!Number.isFinite(sinceMs)) return flows;
+
+  return flows.filter((flow) => {
+    if (!flow.reportedAt) return false;
+    const reportedMs = Date.parse(flow.reportedAt);
+    return Number.isFinite(reportedMs) && reportedMs >= sinceMs;
+  });
+}
+
+/**
  * Aggregate normalized flows into FundingCard totals + sector shares.
  * Does not invent amounts for missing statuses.
  */

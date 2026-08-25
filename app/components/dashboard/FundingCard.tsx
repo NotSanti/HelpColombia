@@ -26,16 +26,16 @@ export function FundingCard({
         Where is the aid going?
       </PanelTitle>
       <p className="mb-1.5 shrink-0 text-x10 font-light text-text-secondary">
-        Funding and resources making an impact.
+        OCHA FTS flows reported since the earthquake.
       </p>
 
-      <ul className="mb-1.5 grid min-h-0 flex-1 grid-cols-3 gap-1">
+      <ul className="mb-1.5 grid shrink-0 grid-cols-3 gap-1.5">
         {totals.map((item) => (
           <li
             key={item.id}
-            className="flex h-full flex-col rounded-md border border-border-subtle/60 bg-panel-alt/35 px-1.5 py-2 backdrop-blur-sm"
+            className="flex aspect-[5/4] flex-col items-center justify-center rounded-md border border-border-subtle/60 bg-panel-alt/35 px-1.5 backdrop-blur-sm"
           >
-            <div className="flex items-start gap-1">
+            <div className="flex min-w-0 flex-col items-center gap-1 text-center">
               <span
                 className={cn(
                   "inline-flex size-5 shrink-0 items-center justify-center rounded-full",
@@ -45,17 +45,14 @@ export function FundingCard({
                 <CircleDollarSign className="size-3" aria-hidden="true" />
               </span>
               <div className="min-w-0">
-                <p className="metric-value text-xs leading-none font-semibold tracking-tight text-foreground">
+                <p className="metric-value truncate text-xs leading-none font-semibold tracking-tight text-foreground">
                   {item.value}
                 </p>
-                <p className="mt-0.5 text-xxs leading-none text-foreground">
+                <p className="mt-0.5 truncate text-xxs leading-none text-foreground">
                   {item.label}
                 </p>
               </div>
             </div>
-            <p className="mt-auto pt-2 text-xxs leading-snug text-text-secondary">
-              {item.detail}
-            </p>
           </li>
         ))}
       </ul>
