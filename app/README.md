@@ -96,3 +96,11 @@ Every milestone in `milestones.md` includes:
 - Cursor prompt
 
 The agent completes **one milestone at a time**, then **commits, pushes, and continues** to the next after verification passes (see `agent-rules.md` §0).
+
+# Help Colombia — Phase 2 Planning Addendum
+This package extends the original Help Colombia Cursor roadmap after completion of Milestones 0–12.
+## Files
+- `phase-2-navigation-milestones.md` — Milestones 13–20 for functional one-page navigation and expanded information sections.
+## How to use with Cursor
+Place this file beside the original project planning documents. Tell Cursor to continue treating the original `agent-rules.md`, `architecture.md`, `security-and-data.md`, and `design-plan.md` as governing documents.
+Then proceed one milestone at a time, beginning with Milestone 13. Do not ask Cursor to implement Milestones 13–20 in one pass.
