@@ -1,37 +1,144 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { Heart, Menu } from "lucide-react";
 import { HelpColombiaLogo } from "@/components/brand/HelpColombiaLogo";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { Button } from "@/components/ui/button";
+import { PRIMARY_NAV, SECTION_IDS, type SectionId } from "@/lib/navigation/sections";
 import { cn } from "@/lib/utils";
 
-const navItems = [
-  { href: "#overview", label: "Overview" },
-  { href: "#updates", label: "Updates" },
-  { href: "#how-to-help", label: "Organizations" },
-  { href: "#impact", label: "Impact" },
-  { href: "#how-to-help", label: "How to Help" },
-] as const;
+function prefersReducedMotion(): boolean {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function scrollToSection(sectionId: SectionId) {
+  const el = document.getElementById(sectionId);
+  if (!el) return;
+
+  el.scrollIntoView({
+    behavior: prefersReducedMotion() ? "auto" : "smooth",
+    block: "start",
+  });
+}
 
 export function Header({ className }: { className?: string }) {
+  const [activeSection, setActiveSection] = useState<SectionId>("overview");
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const elements = SECTION_IDS.map((id) => document.getElementById(id)).filter(
+      (el): el is HTMLElement => el != null,
+    );
+    if (elements.length === 0) return;
+
+    const ratios = new Map<string, number>();
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          ratios.set(entry.target.id, entry.intersectionRatio);
+        }
+        let bestId: SectionId = "overview";
+        let bestRatio = -1;
+        for (const id of SECTION_IDS) {
+          const ratio = ratios.get(id) ?? 0;
+          if (ratio > bestRatio) {
+            bestRatio = ratio;
+            bestId = id;
+          }
+        }
+        if (bestRatio > 0) {
+          setActiveSection(bestId);
+        }
+      },
+      {
+        rootMargin: "-20% 0px -55% 0px",
+        threshold: [0, 0.1, 0.25, 0.5, 0.75, 1],
+      },
+    );
+
+    for (const el of elements) observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const onHash = () => {
+      const hash = window.location.hash.replace("#", "") as SectionId;
+      if (SECTION_IDS.includes(hash)) {
+        setActiveSection(hash);
+        scrollToSection(hash);
+      }
+    };
+
+    const onPopState = () => {
+      const hash = window.location.hash.replace("#", "") as SectionId;
+      if (SECTION_IDS.includes(hash)) {
+        setActiveSection(hash);
+        scrollToSection(hash);
+      } else if (!window.location.hash) {
+        setActiveSection("overview");
+        scrollToSection("overview");
+      }
+    };
+
+    // Initial deep link e.g. /#impact — wait a frame so layout has settled
+    if (window.location.hash) {
+      requestAnimationFrame(() => onHash());
+    }
+
+    window.addEventListener("hashchange", onHash);
+    window.addEventListener("popstate", onPopState);
+    return () => {
+      window.removeEventListener("hashchange", onHash);
+      window.removeEventListener("popstate", onPopState);
+    };
+  }, []);
+
+  function handleNavClick(
+    event: React.MouseEvent<HTMLAnchorElement>,
+    sectionId: SectionId,
+  ) {
+    event.preventDefault();
+    setMenuOpen(false);
+    const url = `#${sectionId}`;
+    if (window.location.hash !== url) {
+      window.history.pushState(null, "", url);
+    }
+    scrollToSection(sectionId);
+    setActiveSection(sectionId);
+  }
+
   return (
-    <header className={cn("chrome-surface relative z-30", className)}>
-      <div className="header-inner flex h-16 items-center justify-between gap-6 px-6">
+    <header
+      className={cn(
+        "chrome-surface sticky top-0 z-40 border-b border-border/40",
+        className,
+      )}
+    >
+      <div className="header-inner flex h-16 items-center justify-between gap-4 px-4 sm:px-6">
         <HelpColombiaLogo showTagline />
 
-        <nav className="hidden items-center gap-1 xl:flex" aria-label="Primary">
-          {navItems.map((item, index) => (
-            <a
-              key={`${item.label}-${item.href}`}
-              href={item.href}
-              className={cn(
-                "rounded-md px-4 py-2 text-sm font-medium text-text-secondary transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring",
-                index === 0 &&
-                  "text-foreground underline decoration-severity-severe decoration-2 underline-offset-[14px]",
-              )}
-            >
-              {item.label}
-            </a>
-          ))}
+        <nav className="hidden items-center gap-0.5 2xl:flex" aria-label="Primary">
+          {PRIMARY_NAV.map((item) => {
+            const isActive = activeSection === item.sectionId;
+            return (
+              <a
+                key={item.sectionId}
+                href={item.href}
+                aria-current={isActive ? "true" : undefined}
+                onClick={(event) => handleNavClick(event, item.sectionId)}
+                className={cn(
+                  "rounded-md px-2.5 py-2 text-sm font-medium transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring xl:px-3",
+                  isActive
+                    ? "text-foreground underline decoration-severity-severe decoration-2 underline-offset-[14px]"
+                    : "text-text-secondary",
+                )}
+              >
+                {item.label}
+              </a>
+            );
+          })}
         </nav>
 
         <div className="flex items-center gap-2">
@@ -42,40 +149,63 @@ export function Header({ className }: { className?: string }) {
             size="lg"
             className="hidden h-10 gap-2 px-5 text-xs font-semibold tracking-wide uppercase sm:inline-flex"
           >
-            <a href="#how-to-help">
+            <a
+              href="#help"
+              onClick={(event) => handleNavClick(event, "help")}
+            >
               <Heart className="size-4" aria-hidden="true" />
               Donate Now
             </a>
           </Button>
 
-          <details className="relative xl:hidden">
-            <summary
-              className="flex size-10 cursor-pointer list-none items-center justify-center rounded-md border border-border bg-panel text-foreground focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden"
-              aria-label="Open menu"
+          <div className="relative 2xl:hidden">
+            <button
+              type="button"
+              className="flex size-10 cursor-pointer items-center justify-center rounded-md border border-border bg-panel text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={menuOpen}
+              aria-controls="mobile-primary-nav"
+              onClick={() => setMenuOpen((open) => !open)}
             >
               <Menu className="size-4" aria-hidden="true" />
-            </summary>
-            <div className="absolute top-full right-0 z-40 mt-2 w-56 rounded-lg border border-border bg-panel-raised p-2 shadow-xl">
-              <nav className="flex flex-col gap-1" aria-label="Mobile">
-                {navItems.map((item) => (
+            </button>
+            {menuOpen ? (
+              <div
+                id="mobile-primary-nav"
+                className="absolute top-full right-0 z-40 mt-2 w-56 rounded-lg border border-border bg-panel-raised p-2 shadow-xl"
+              >
+                <nav className="flex flex-col gap-1" aria-label="Mobile">
+                  {PRIMARY_NAV.map((item) => {
+                    const isActive = activeSection === item.sectionId;
+                    return (
+                      <a
+                        key={`mobile-${item.sectionId}`}
+                        href={item.href}
+                        aria-current={isActive ? "true" : undefined}
+                        onClick={(event) => handleNavClick(event, item.sectionId)}
+                        className={cn(
+                          "rounded-md px-3 py-2 text-sm font-medium focus-visible:ring-2 focus-visible:ring-ring",
+                          isActive
+                            ? "bg-panel text-foreground"
+                            : "text-text-secondary hover:bg-panel hover:text-foreground",
+                        )}
+                      >
+                        {item.label}
+                      </a>
+                    );
+                  })}
                   <a
-                    key={`mobile-${item.label}`}
-                    href={item.href}
-                    className="rounded-md px-3 py-2 text-sm font-medium text-text-secondary hover:bg-panel hover:text-foreground"
+                    href="#help"
+                    onClick={(event) => handleNavClick(event, "help")}
+                    className="mt-1 inline-flex items-center justify-center gap-1.5 rounded-md bg-primary px-3 py-2.5 text-xs font-semibold tracking-wide text-primary-foreground uppercase focus-visible:ring-2 focus-visible:ring-ring"
                   >
-                    {item.label}
+                    <Heart className="size-3.5" aria-hidden="true" />
+                    Donate Now
                   </a>
-                ))}
-                <a
-                  href="#how-to-help"
-                  className="mt-1 inline-flex items-center justify-center gap-1.5 rounded-md bg-primary px-3 py-2.5 text-xs font-semibold tracking-wide text-primary-foreground uppercase"
-                >
-                  <Heart className="size-3.5" aria-hidden="true" />
-                  Donate Now
-                </a>
-              </nav>
-            </div>
-          </details>
+                </nav>
+              </div>
+            ) : null}
+          </div>
         </div>
       </div>
     </header>

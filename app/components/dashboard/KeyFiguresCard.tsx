@@ -84,7 +84,7 @@ export function KeyFiguresCard({
         })}
       </ul>
       <a
-        href="#regions"
+        href="#needs"
         className="mt-auto inline-flex shrink-0 pt-2 text-x10 font-medium text-severity-severe underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-ring"
       >
         See affected areas →

@@ -174,8 +174,20 @@
     @apply bg-background text-foreground;
   }
   html {
-    @apply scroll-smooth font-sans;
+    @apply font-sans;
   }
+}
+
+/* Smooth in-page nav only when the user has not requested reduced motion */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Sticky header (h-16) clearance for section anchors */
+.scroll-mt-section {
+  scroll-margin-top: 4rem;
 }
 
 /* Numeric metrics: stable digit width for figures and funding values */

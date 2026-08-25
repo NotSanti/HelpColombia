@@ -89,7 +89,7 @@ export function FundingCard({
           ))}
         </ul>
         <a
-          href="#how-to-help"
+          href="#impact"
           className="mt-1.5 inline-flex text-x10 font-medium text-severity-severe underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-ring"
         >
           See full funding details →

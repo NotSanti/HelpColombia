@@ -28,12 +28,12 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${inter.variable} ${geistMono.variable} h-dvh overflow-hidden antialiased`}
+      className={`${inter.variable} ${geistMono.variable} antialiased`}
     >
       <head>
         <script src="/theme-init.js" defer nonce={nonce} />
       </head>
-      <body className="flex h-dvh flex-col overflow-hidden font-sans">
+      <body className="min-h-dvh font-sans">
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:m-2 focus:rounded-md focus:bg-panel focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-foreground focus:ring-2 focus:ring-ring"
