@@ -16,6 +16,7 @@ import {
 } from "@/lib/sources/ifrc";
 import type {
   DashboardData,
+  ImpactObservationView,
   KeyFigure,
   LiveUpdateItem,
   OrganizationHelp,
@@ -489,6 +490,28 @@ async function loadDashboardFromSupabase(): Promise<DashboardData> {
     retrievedAt: row.retrieved_at,
   }));
 
+  const impactObservations: ImpactObservationView[] = observations
+    .map((row) => {
+      const sortAt = row.reportedAt ?? row.retrievedAt;
+      return {
+        id: row.id,
+        metricType: String(row.metricType),
+        label: formatMetricLabel(String(row.metricType)),
+        displayValue: row.displayValue?.trim()
+          ? row.displayValue.trim()
+          : new Intl.NumberFormat("en-US").format(row.value),
+        value: row.value,
+        department: row.department,
+        sourceName: row.sourceName ?? "Unknown source",
+        reportedAtLabel: formatPublishedLabel(row.reportedAt),
+        retrievedAtLabel: formatRelativeTime(row.retrievedAt),
+        sourceUrl: row.sourceUrl,
+        sortAt,
+      };
+    })
+    .sort((a, b) => b.sortAt.localeCompare(a.sortAt))
+    .slice(0, 60);
+
   const freshestMetricAt = resolvedFigures
     .map(
       (figure) =>
@@ -538,6 +561,10 @@ async function loadDashboardFromSupabase(): Promise<DashboardData> {
     liveUpdates:
       liveUpdates.length > 0 ? liveUpdates : dashboardFixture.liveUpdates,
     regions: regionRows.length > 0 ? regionRows : dashboardFixture.regions,
+    impactObservations:
+      impactObservations.length > 0
+        ? impactObservations
+        : dashboardFixture.impactObservations,
     dataSources:
       (sources ?? []).length > 0
         ? (sources ?? []).map((s) => s.name)

@@ -100,6 +100,21 @@ export type RegionImpact = {
   lastUpdatedLabel?: string | null;
 };
 
+export type ImpactObservationView = {
+  id: string;
+  metricType: string;
+  label: string;
+  displayValue: string;
+  value: number;
+  department: string | null;
+  sourceName: string;
+  reportedAtLabel: string | null;
+  retrievedAtLabel: string;
+  sourceUrl: string | null;
+  /** ISO for sorting / freshness */
+  sortAt: string;
+};
+
 export type DashboardDataMode = "live" | "fixture" | "degraded";
 
 export type DashboardData = {
@@ -112,5 +127,7 @@ export type DashboardData = {
   sectors: FundingSector[];
   liveUpdates: LiveUpdateItem[];
   regions: RegionImpact[];
+  /** Append-only metric observations for expanded impact (actual reports only). */
+  impactObservations: ImpactObservationView[];
   dataSources: string[];
 };

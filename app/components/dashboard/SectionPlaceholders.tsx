@@ -2,11 +2,15 @@ import { SECTION_PLACEHOLDERS } from "@/lib/navigation/sections";
 
 /**
  * Minimal Phase 2 section anchors — full content arrives in later milestones.
- * `#updates`, `#needs`, and `#response` are rendered by their dedicated sections.
+ * Dedicated sections render `#updates`, `#needs`, `#response`, and `#impact`.
  */
 export function SectionPlaceholders() {
   const placeholders = SECTION_PLACEHOLDERS.filter(
-    (s) => s.id !== "updates" && s.id !== "needs" && s.id !== "response",
+    (s) =>
+      s.id !== "updates" &&
+      s.id !== "needs" &&
+      s.id !== "response" &&
+      s.id !== "impact",
   );
 
   return (

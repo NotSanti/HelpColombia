@@ -17,6 +17,7 @@ import { SectionPlaceholders } from "@/components/dashboard/SectionPlaceholders"
 import { UpdatesSection } from "@/components/dashboard/UpdatesSection";
 import { NeedsSection } from "@/components/dashboard/NeedsSection";
 import { ResponseSection } from "@/components/dashboard/ResponseSection";
+import { ImpactSection } from "@/components/dashboard/ImpactSection";
 import type { MapController } from "@/components/map/ColombiaMap";
 import {
   MapChrome,
@@ -283,6 +284,11 @@ export function DashboardShell({ data }: { data: DashboardData }) {
           onSelectRegion={selectRegion}
         />
         <ResponseSection organizations={data.organizations} />
+        <ImpactSection
+          keyFigures={data.keyFigures}
+          regions={data.regions}
+          observations={data.impactObservations}
+        />
         <SectionPlaceholders />
       </main>
 
