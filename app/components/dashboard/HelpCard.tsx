@@ -59,7 +59,6 @@ export function HelpCard({
   return (
     <Panel
       className={cn("flex min-h-0 flex-col px-3.5 pt-3 pb-2", className)}
-      id="how-to-help"
     >
       <h2 className="shrink-0 text-sm font-medium tracking-wide text-foreground uppercase">
         How can I help?

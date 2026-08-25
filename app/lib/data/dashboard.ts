@@ -126,6 +126,10 @@ function buildOrganizationHelpFromIfrc(input: {
   summary: string;
   metrics: OrganizationHelpMetric[];
   opsUpdateLabel?: string;
+  activities: string[];
+  activitySummary: string | null;
+  responseSourceName: string;
+  responseSourceUrl: string;
 } | null {
   if (!input.operation) return null;
 
@@ -157,6 +161,10 @@ function buildOrganizationHelpFromIfrc(input: {
     summary: buildIfrcHelpSummary(input.operation, ""),
     metrics,
     opsUpdateLabel,
+    activities: input.operation.activities,
+    activitySummary: input.operation.activitySummary,
+    responseSourceName: "IFRC GO",
+    responseSourceUrl: input.operation.sourceUrl,
   };
 }
 
@@ -323,14 +331,19 @@ async function loadDashboardFromSupabase(): Promise<DashboardData> {
         websiteUrl: org.website_url ?? "#",
         websiteLabel: "Official site",
         accent: asAccent(org.accent),
+        organizationType: org.organization_type,
       };
 
       if (org.slug === "colombian-red-cross" && ifrcHelp) {
         return {
           ...base,
-          summary: ifrcHelp.summary || base.summary,
+          // Keep static summary for response section; HelpCard still shows org blurb.
           metrics: ifrcHelp.metrics,
           opsUpdateLabel: ifrcHelp.opsUpdateLabel,
+          activities: ifrcHelp.activities,
+          activitySummary: ifrcHelp.activitySummary,
+          responseSourceName: ifrcHelp.responseSourceName,
+          responseSourceUrl: ifrcHelp.responseSourceUrl,
         };
       }
 

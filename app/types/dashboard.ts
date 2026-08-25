@@ -40,13 +40,20 @@ export type OrganizationHelp = {
   id: string;
   slug: string;
   name: string;
+  /** Static organization blurb from the org record — not live ops. */
   summary: string;
   websiteUrl: string;
   websiteLabel: string;
   accent: "severe" | "info" | "high";
+  organizationType?: string | null;
   /** Sourced numeric claims only — never AI-inferred */
   metrics?: OrganizationHelpMetric[];
   opsUpdateLabel?: string;
+  /** Sourced IFRC / ops activity labels when available. */
+  activities?: string[];
+  activitySummary?: string | null;
+  responseSourceName?: string | null;
+  responseSourceUrl?: string | null;
 };
 
 export type FundingTotalItem = {
