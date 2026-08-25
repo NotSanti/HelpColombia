@@ -67,6 +67,10 @@ export const dashboardFixture: DashboardData = {
       websiteUrl: "https://www.cruzrojacolombiana.org/",
       websiteLabel: "Official site",
       accent: "severe",
+      organizationType: "ngo",
+      canDonate: true,
+      donationVerified: true,
+      approvedHostname: "www.cruzrojacolombiana.org",
     },
     {
       id: "unicef",
@@ -76,6 +80,10 @@ export const dashboardFixture: DashboardData = {
       websiteUrl: "https://www.unicef.org/",
       websiteLabel: "Official site",
       accent: "info",
+      organizationType: "un",
+      canDonate: true,
+      donationVerified: true,
+      approvedHostname: "www.unicef.org",
     },
     {
       id: "wfp",
@@ -85,6 +93,10 @@ export const dashboardFixture: DashboardData = {
       websiteUrl: "https://www.wfp.org/",
       websiteLabel: "Official site",
       accent: "info",
+      organizationType: "un",
+      canDonate: true,
+      donationVerified: true,
+      approvedHostname: "www.wfp.org",
     },
     {
       id: "direct-relief",
@@ -94,6 +106,10 @@ export const dashboardFixture: DashboardData = {
       websiteUrl: "https://www.directrelief.org/",
       websiteLabel: "Official site",
       accent: "high",
+      organizationType: "ngo",
+      canDonate: true,
+      donationVerified: true,
+      approvedHostname: "www.directrelief.org",
     },
   ],
   fundingTotals: [

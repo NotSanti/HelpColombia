@@ -13,11 +13,11 @@ import { LiveUpdatesCard } from "@/components/dashboard/LiveUpdatesCard";
 import { RegionalImpactPanel } from "@/components/dashboard/RegionalImpactPanel";
 import { Footer } from "@/components/dashboard/Footer";
 import { DataFreshnessBanner } from "@/components/dashboard/DataFreshnessBanner";
-import { SectionPlaceholders } from "@/components/dashboard/SectionPlaceholders";
 import { UpdatesSection } from "@/components/dashboard/UpdatesSection";
 import { NeedsSection } from "@/components/dashboard/NeedsSection";
 import { ResponseSection } from "@/components/dashboard/ResponseSection";
 import { ImpactSection } from "@/components/dashboard/ImpactSection";
+import { HelpSection } from "@/components/dashboard/HelpSection";
 import type { MapController } from "@/components/map/ColombiaMap";
 import {
   MapChrome,
@@ -289,7 +289,7 @@ export function DashboardShell({ data }: { data: DashboardData }) {
           regions={data.regions}
           observations={data.impactObservations}
         />
-        <SectionPlaceholders />
+        <HelpSection organizations={data.organizations} />
       </main>
 
       <Footer className="relative z-30" dataSources={data.dataSources} />

@@ -115,21 +115,23 @@ export function HelpCard({
               </div>
 
               <div className="flex w-19 shrink-0 flex-col items-end gap-1">
-                <Button
-                  asChild
-                  size="xs"
-                  className={cn(
-                    "h-7 w-full rounded-[5px] border-transparent px-0 text-[10px] font-bold tracking-wide uppercase",
-                    donateClass[org.accent],
-                  )}
-                >
-                  <a
-                    href={`/out/${encodeURIComponent(org.slug)}`}
-                    aria-label={`Donate via ${org.name}`}
+                {org.canDonate !== false ? (
+                  <Button
+                    asChild
+                    size="xs"
+                    className={cn(
+                      "h-7 w-full rounded-[5px] border-transparent px-0 text-[10px] font-bold tracking-wide uppercase",
+                      donateClass[org.accent],
+                    )}
                   >
-                    Donate
-                  </a>
-                </Button>
+                    <a
+                      href={`/out/${encodeURIComponent(org.slug)}`}
+                      aria-label={`Donate via ${org.name}`}
+                    >
+                      Donate
+                    </a>
+                  </Button>
+                ) : null}
                 <a
                   href={org.websiteUrl}
                   target="_blank"

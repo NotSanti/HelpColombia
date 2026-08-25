@@ -54,6 +54,10 @@ export type OrganizationHelp = {
   activitySummary?: string | null;
   responseSourceName?: string | null;
   responseSourceUrl?: string | null;
+  /** Whether a verified /out/{slug} CTA is available (never expose raw donate URL). */
+  canDonate?: boolean;
+  donationVerified?: boolean;
+  approvedHostname?: string | null;
 };
 
 export type FundingTotalItem = {

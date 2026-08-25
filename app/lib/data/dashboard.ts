@@ -194,6 +194,7 @@ async function loadDashboardFromSupabase(): Promise<DashboardData> {
     { data: fundingRows, error: fundingError },
     { data: ifrcOps, error: ifrcOpsError },
     { data: ifrcUpdates, error: ifrcUpdatesError },
+    { data: donationRows, error: donationError },
   ] = await Promise.all([
     supabase
       .from("impact_metrics")
@@ -237,6 +238,11 @@ async function loadDashboardFromSupabase(): Promise<DashboardData> {
       .eq("disaster_id", disaster.id)
       .order("published_at", { ascending: false })
       .limit(1),
+    supabase
+      .from("donation_destinations")
+      .select(
+        "organization_id, approved_hostname, verification_status, is_enabled",
+      ),
   ]);
 
   if (metricsError) throw metricsError;
@@ -247,6 +253,7 @@ async function loadDashboardFromSupabase(): Promise<DashboardData> {
   if (fundingError) throw fundingError;
   if (ifrcOpsError) throw ifrcOpsError;
   if (ifrcUpdatesError) throw ifrcUpdatesError;
+  if (donationError) throw donationError;
 
   const ifrcOpRow = ifrcOps?.[0] ?? null;
   const ifrcUpdateRow = ifrcUpdates?.[0] ?? null;
@@ -322,8 +329,18 @@ async function loadDashboardFromSupabase(): Promise<DashboardData> {
     latestOpsUpdateAt: ifrcUpdateRow?.published_at ?? null,
   });
 
+  const donationByOrgId = new Map(
+    (donationRows ?? []).map((row) => [row.organization_id, row]),
+  );
+
   const organizationRows: OrganizationHelp[] = (organizations ?? []).map(
     (org) => {
+      const destination = donationByOrgId.get(org.id);
+      const donationVerified = destination?.verification_status === "verified";
+      const canDonate = Boolean(
+        donationVerified && destination?.is_enabled,
+      );
+
       const base: OrganizationHelp = {
         id: org.slug,
         slug: org.slug,
@@ -333,6 +350,9 @@ async function loadDashboardFromSupabase(): Promise<DashboardData> {
         websiteLabel: "Official site",
         accent: asAccent(org.accent),
         organizationType: org.organization_type,
+        canDonate,
+        donationVerified,
+        approvedHostname: destination?.approved_hostname ?? null,
       };
 
       if (org.slug === "colombian-red-cross" && ifrcHelp) {
